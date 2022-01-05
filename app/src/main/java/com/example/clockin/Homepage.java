@@ -37,6 +37,7 @@ public class Homepage extends AppCompatActivity implements View.OnClickListener 
     private boolean clockedin = false;
     private Chronometer chronometer;
     private long difference;
+    private String earliest_date = "1900/01/01 00:00:00";
 
 
     protected void onCreate(Bundle savedInstanceState) {
@@ -139,27 +140,30 @@ public class Homepage extends AppCompatActivity implements View.OnClickListener 
                 .setBody(body)
                 .setMethod(VolleyDataRequester.Method.POST )
                 .setJsonResponseListener(response -> {
-                    Log.v("Homepage", response.toString());
                     try {
                         if (!response.getBoolean("status")) {
                             chronometer.setText(R.string.error);
                         } else {
                             JSONArray jsonArray = response.getJSONArray("result");
+                            SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
+                            Date earliest = simpleDateFormat.parse(earliest_date);
                             for (int i = 0; i < jsonArray.length(); i++) {
                                 jsonObject[0] = jsonArray.getJSONObject(i);
                                 if (jsonObject[0].getString("user").equals(username)) {
-                                    userObject = jsonObject[0];
+                                    Date date = simpleDateFormat.parse(jsonObject[0].getString("date"));
+                                    if (earliest.compareTo(date) < 0) {
+                                        userObject = jsonObject[0];
+                                        earliest = date;
+                                    }
                                 }
                             }
+                            Log.v("Homepage", userObject.toString());
                             if (userObject.getString("status").equals("OFF") || jsonObject[0] == null) {
                                 clockedin = false;
                                 chronometer.setText(R.string.clocked_out);
                             } else {
                                 clockedin = true;
-                                SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
                                 Date date = simpleDateFormat.parse(userObject.getString("date"));
-                                Log.v("Date", date.toString());
-                                Log.v("Date", calendar.getTime().toString());
                                 printDifference(date, calendar.getTime());
                             }
                         }
@@ -170,6 +174,7 @@ public class Homepage extends AppCompatActivity implements View.OnClickListener 
                     }
                 }).requestJson();
     }
+
 
     private void showAlertDialog(String status) {
         AlertDialog alertDialog = new AlertDialog.Builder(Homepage.this).create();

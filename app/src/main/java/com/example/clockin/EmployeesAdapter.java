@@ -55,10 +55,11 @@ public class EmployeesAdapter extends RecyclerView.Adapter<EmployeesAdapter.View
             // retrieve from JSONObject
             JSONObject employee = mData.get(users.get(position));
             holder.username.setText(employee.getString("user"));
-            holder.status.setText("STATUS: " + employee.getString("status"));
+            holder.clockedIn = employee.getString("status").equals("ON");
+            holder.color();
             String base64 = employee.getString("image");
+            Log.v("Employees", base64);
             String base = base64.substring(0, base64.length() - 209);
-            Log.v("Employee", base);
             byte[] decodedString = Base64.decode(base, Base64.DEFAULT);
             Bitmap decodedByte = BitmapFactory.decodeByteArray(decodedString, 0, decodedString.length);
             holder.photo.setImageBitmap(decodedByte);
@@ -79,16 +80,24 @@ public class EmployeesAdapter extends RecyclerView.Adapter<EmployeesAdapter.View
         TextView username;
         TextView status;
         ImageView photo;
+        boolean clockedIn;
+        private View itemView;
 
         ViewHolder(View itemView) {
             super(itemView);
+            this.itemView = itemView;
             username = itemView.findViewById(R.id.userrow_username);
             status = itemView.findViewById(R.id.userrow_status);
             photo = itemView.findViewById(R.id.photo);
             itemView.setOnClickListener(this);
-            if (status.equals("ON")) {
+        }
+
+        public void color() {
+            if (clockedIn) {
+                status.setText("STATUS: ON");
                 itemView.setBackgroundColor(green);
             } else {
+                status.setText("STATUS: OFF");
                 itemView.setBackgroundColor(red);
             }
         }

@@ -19,9 +19,12 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
+import java.util.Date;
 import java.util.Dictionary;
 import java.util.HashMap;
 import java.util.Objects;
@@ -31,6 +34,7 @@ public class Employees extends AppCompatActivity implements EmployeesAdapter.Ite
     EmployeesAdapter adapter;
     private HashMap<String, JSONObject> employees;
     private String HOST = "https://52.139.218.209:443/record/get_user_record";
+    private String earliest_date = "1900/01/01 00:00:00";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -40,12 +44,10 @@ public class Employees extends AppCompatActivity implements EmployeesAdapter.Ite
         Objects.requireNonNull(getSupportActionBar()).setDisplayHomeAsUpEnabled(true);
 
         // data to populate the RecyclerView with
-        Log.v("Response", "Oncreate");
         populateDict();
     }
 
     private void populateDict() {
-        Log.v("Response", "Populating employees");
         Calendar calendar = Calendar.getInstance();
         String curr_month = Integer.toString(calendar.get(Calendar.MONTH) + 1);
         String curr_day = Integer.toString(calendar.get(Calendar.DAY_OF_MONTH) + 1);
@@ -62,29 +64,41 @@ public class Employees extends AppCompatActivity implements EmployeesAdapter.Ite
         body.put("account", company_number);
         body.put("starttime", prev);
         body.put("endtime", curr);
-        Log.v("Response", body.toString());
 
         VolleyDataRequester.withSelfCertifiedHttps(getApplicationContext())
                 .setUrl(HOST)
                 .setBody(body)
                 .setMethod(VolleyDataRequester.Method.POST)
                 .setJsonResponseListener(response -> {
-                    Log.v("Response", response.toString());
+                    largeLog("Response", response.toString());
                     try {
                         if (!response.getBoolean("status")) {
                             Toast.makeText(this, "Connection failed. Try again", Toast.LENGTH_LONG).show();
                         } else {
+                            SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
+                            Date earliest = simpleDateFormat.parse(earliest_date);
                             JSONArray jsonArray = response.getJSONArray("result");
                             employees = new HashMap<>();
                             for (int i = 0; i < jsonArray.length(); i++) {
-                                JSONObject jsonObject = jsonArray.getJSONObject(i);
-                                if (!employees.containsKey(jsonObject.getString("user"))) {
-                                    employees.put(jsonObject.getString("user"), jsonObject);
+                                JSONObject currentObject = jsonArray.getJSONObject(i);
+                                String username = currentObject.getString("user");
+                                // insert employee object into hashmap if it doesn't exist yet
+                                if (!employees.containsKey(username)) {
+                                    employees.put(currentObject.getString("user"), currentObject);
+                                    earliest = simpleDateFormat.parse(currentObject.getString("date"));
+                                } else {
+                                    // if employee object exists in hashmap, insert the most recent employee object
+                                    Date date = simpleDateFormat.parse(currentObject.getString("date"));
+                                    if (earliest.compareTo(date) < 0) {
+                                        employees.put(currentObject.getString("user"), currentObject);
+                                        earliest = date;
+                                    }
                                 }
                             }
                             setUpRecyclerView();
+
                         }
-                    } catch (JSONException e) {
+                    } catch (JSONException | ParseException e){
                         e.printStackTrace();
                     }
                 }).requestJson();
@@ -100,6 +114,15 @@ public class Employees extends AppCompatActivity implements EmployeesAdapter.Ite
         recyclerView.setAdapter(adapter);
         DividerItemDecoration dividerItemDecoration = new DividerItemDecoration(recyclerView.getContext(), DividerItemDecoration.VERTICAL);
         recyclerView.addItemDecoration(dividerItemDecoration);
+    }
+
+    public static void largeLog(String tag, String content) {
+        if (content.length() > 4000) {
+            Log.d(tag, content.substring(0, 4000));
+            largeLog(tag, content.substring(4000));
+        } else {
+            Log.d(tag, content);
+        }
     }
 
     @Override
