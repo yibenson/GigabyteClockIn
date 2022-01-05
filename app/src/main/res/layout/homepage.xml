@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <TextView
+        android:id="@+id/welcome"
+        android:layout_width="300dp"
+        android:layout_height="54dp"
+        android:layout_marginTop="40dp"
+        android:text="Welcome, Benson"
+        android:textSize="32sp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.144"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <Chronometer
+        android:id="@+id/chronometer"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintStart_toStartOf="@+id/welcome"
+        app:layout_constraintTop_toBottomOf="@+id/welcome"
+        android:layout_marginTop="12dp"/>
+
+    <ImageButton
+        android:id="@+id/clockin"
+        android:layout_width="175dp"
+        android:layout_height="175dp"
+        android:layout_marginTop="24dp"
+        android:adjustViewBounds="true"
+        android:background="@drawable/clockin"
+        android:scaleType="fitCenter"
+        app:layout_constraintStart_toStartOf="@+id/welcome"
+        app:layout_constraintTop_toBottomOf="@+id/chronometer" />
+
+    <ImageButton
+        android:id="@+id/clockout"
+        android:layout_width="175dp"
+        android:layout_height="175dp"
+        android:layout_marginStart="24dp"
+        android:layout_marginTop="24dp"
+        android:adjustViewBounds="true"
+        android:background="@drawable/clockout"
+        android:scaleType="fitCenter"
+        app:layout_constraintStart_toEndOf="@+id/clockin"
+        app:layout_constraintTop_toBottomOf="@+id/chronometer" />
+
+    <ImageButton
+        android:id="@+id/viewpunches"
+        android:layout_width="175dp"
+        android:layout_height="175dp"
+        android:layout_marginTop="24dp"
+        android:adjustViewBounds="true"
+        android:background="@drawable/schedule"
+        android:scaleType="fitCenter"
+        app:layout_constraintStart_toStartOf="@+id/welcome"
+        app:layout_constraintTop_toBottomOf="@+id/clockin" />
+
+    <ImageButton
+        android:id="@+id/companyinfo"
+        android:layout_width="175dp"
+        android:layout_height="175dp"
+        android:layout_marginStart="24dp"
+        android:layout_marginTop="24dp"
+        android:adjustViewBounds="true"
+        android:background="@drawable/info"
+        android:scaleType="fitCenter"
+        app:layout_constraintStart_toEndOf="@+id/viewpunches"
+        app:layout_constraintTop_toBottomOf="@+id/clockout" />
+
+
+</androidx.constraintlayout.widget.ConstraintLayout>

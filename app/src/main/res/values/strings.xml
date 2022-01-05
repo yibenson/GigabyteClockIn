@@ -1,0 +1,54 @@
+<resources>
+    <string name="app_name">ClockIn</string>
+    <string name="login">Login</string>
+
+    <string name="confirm_password">Confirm Password</string>
+    <string name="register">Register</string>
+    <string name="registration_form">報名表格</string>
+    <string name="add_photo">Add Photo</string>
+
+    // login
+    <string name="title">GClockIn</string>
+    <string name="company_username">欲註冊帳號</string>
+    <string name="company_password">欲設定帳號密碼</string>
+
+    // Chinese registration form
+    // company username
+    // company password
+    // company password confirm
+    <string name="company_name">公司名稱</string>
+    <string name="email">員工電子郵件</string>
+    <string name="name">員工姓名</string>
+
+    // User registration form
+    <string name="user_registration">員工註冊</string>
+    <string name="company_account_number">公司帳號</string>
+    <string name="user_username">員工姓名</string>
+    <string name="phone_number">員工聯絡電話</string>
+    <string name="birthday">生日</string>
+    <string name="sex">性別</string>
+    <string-array name="性別">
+        <item>男性</item>
+        <item>奴性</item>
+        <item>別的</item>
+    </string-array>
+    // mail
+    <string name="manager">是否為管理職</string>
+    <string name="wage">時薪</string>
+
+    // clockinorconfig
+    <string name="clockin">員工打卡</string>
+    <string name="options">管理</string>
+    <string name="error">"An error occurred when connecting to the server"</string>
+    <string name="clocked_out">"You're not currently clocked in"</string>
+    <string name="clocked_in">"You're not currently clocked in"</string>
+
+    // welcome
+    <string name="morning">早安, %1$s</string>
+    <string name="midnight">午夜您好, %1$s</string>
+    <string name="evening">晚安您好, %1$s</string>
+    <string name="afternoon">午安您好, %1$s</string>
+    <string name="timer_format">00:00:00</string>
+
+
+</resources>

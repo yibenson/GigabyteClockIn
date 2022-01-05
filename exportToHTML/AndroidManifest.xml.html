@@ -1,0 +1,77 @@
+<html>
+<head>
+<title>AndroidManifest.xml</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<style type="text/css">
+.s0 { color: #080808; font-style: italic;}
+.s1 { color: #174ad4;}
+.s2 { color: #080808;}
+.s3 { color: #067d17;}
+.s4 { color: #0033b3;}
+</style>
+</head>
+<body bgcolor="#ffffff">
+<table CELLSPACING=0 CELLPADDING=5 COLS=1 WIDTH="100%" BGCOLOR="#c0c0c0" >
+<tr><td><center>
+<font face="Arial, Helvetica" color="#000000">
+AndroidManifest.xml</font>
+</center></td></tr></table>
+<pre><span class="s0">&lt;?</span><span class="s1">xml version</span><span class="s3">=&quot;1.0&quot; </span><span class="s1">encoding</span><span class="s3">=&quot;utf-8&quot;</span><span class="s0">?&gt;</span>
+<span class="s2">&lt;</span><span class="s4">manifest </span><span class="s1">xmlns:android</span><span class="s3">=&quot;http://schemas.android.com/apk/res/android&quot;</span>
+    <span class="s1">xmlns:tools</span><span class="s3">=&quot;http://schemas.android.com/tools&quot;</span>
+    <span class="s1">package</span><span class="s3">=&quot;com.example.clockin&quot;</span><span class="s2">&gt;</span>
+    <span class="s2">&lt;</span><span class="s4">uses-permission </span><span class="s1">android:name</span><span class="s3">=&quot;android.permission.INTERNET&quot;</span><span class="s2">/&gt;</span>
+    <span class="s2">&lt;</span><span class="s4">uses-permission </span><span class="s1">android:name</span><span class="s3">=&quot;android.permission.CAMERA&quot;</span><span class="s2">/&gt;</span>
+    <span class="s2">&lt;</span><span class="s4">uses-permission </span><span class="s1">android:name</span><span class="s3">=&quot;android.permission.WRITE_EXTERNAL_STORAGE&quot;</span><span class="s2">/&gt;</span>
+    <span class="s2">&lt;</span><span class="s4">uses-permission </span><span class="s1">android:name</span><span class="s3">=&quot;android.permission.ACCESS_NETWORK_STATE&quot; </span><span class="s2">/&gt;</span>
+
+
+    <span class="s2">&lt;</span><span class="s4">application </span><span class="s1">android:name</span><span class="s3">=&quot;.volley.VolleyHelperApplication&quot;</span>
+        <span class="s1">android:allowBackup</span><span class="s3">=&quot;true&quot;</span>
+        <span class="s1">android:icon</span><span class="s3">=&quot;@mipmap/ic_launcher&quot;</span>
+        <span class="s1">android:label</span><span class="s3">=&quot;@string/app_name&quot;</span>
+        <span class="s1">android:roundIcon</span><span class="s3">=&quot;@mipmap/ic_launcher_round&quot;</span>
+        <span class="s1">android:supportsRtl</span><span class="s3">=&quot;true&quot;</span>
+        <span class="s1">android:theme</span><span class="s3">=&quot;@style/Theme.ClockIn&quot;</span>
+        <span class="s1">android:networkSecurityConfig</span><span class="s3">=&quot;@xml/network_security_config&quot;</span><span class="s2">&gt;</span>
+
+
+        <span class="s2">&lt;</span><span class="s4">activity</span>
+            <span class="s1">android:name</span><span class="s3">=&quot;.MainActivity&quot;</span>
+            <span class="s1">android:exported</span><span class="s3">=&quot;true&quot;</span><span class="s2">&gt;</span>
+            <span class="s2">&lt;</span><span class="s4">intent-filter</span><span class="s2">&gt;</span>
+                <span class="s2">&lt;</span><span class="s4">action </span><span class="s1">android:name</span><span class="s3">=&quot;android.intent.action.MAIN&quot; </span><span class="s2">/&gt;</span>
+
+                <span class="s2">&lt;</span><span class="s4">category </span><span class="s1">android:name</span><span class="s3">=&quot;android.intent.category.LAUNCHER&quot; </span><span class="s2">/&gt;</span>
+            <span class="s2">&lt;/</span><span class="s4">intent-filter</span><span class="s2">&gt;</span>
+        <span class="s2">&lt;/</span><span class="s4">activity</span><span class="s2">&gt;</span>
+        <span class="s2">&lt;</span><span class="s4">activity</span>
+            <span class="s1">android:name</span><span class="s3">=&quot;.CompanyRegistrationWindow&quot;</span>
+            <span class="s1">android:exported</span><span class="s3">=&quot;true&quot; </span><span class="s2">/&gt;</span>
+        <span class="s2">&lt;</span><span class="s4">activity</span>
+            <span class="s1">android:name</span><span class="s3">=&quot;.ConfirmPhoto&quot;</span>
+            <span class="s1">android:exported</span><span class="s3">=&quot;true&quot; </span><span class="s2">/&gt;</span>
+        <span class="s2">&lt;</span><span class="s4">activity</span>
+            <span class="s1">android:name</span><span class="s3">=&quot;.FaceClockIn&quot;</span>
+            <span class="s1">android:exported</span><span class="s3">=&quot;true&quot; </span><span class="s2">/&gt;</span>
+        <span class="s2">&lt;</span><span class="s4">activity</span>
+            <span class="s1">android:name</span><span class="s3">=&quot;.ConfigMenu&quot;</span>
+            <span class="s1">android:exported</span><span class="s3">=&quot;true&quot; </span><span class="s2">/&gt;</span>
+        <span class="s2">&lt;</span><span class="s4">activity</span>
+            <span class="s1">android:name</span><span class="s3">=&quot;.UserRegistrationWindow&quot;</span>
+            <span class="s1">android:exported</span><span class="s3">=&quot;true&quot; </span><span class="s2">/&gt;</span>
+        <span class="s2">&lt;</span><span class="s4">activity</span>
+            <span class="s1">android:name</span><span class="s3">=&quot;.Homepage&quot;</span>
+            <span class="s1">android:exported</span><span class="s3">=&quot;true&quot; </span><span class="s2">/&gt;</span>
+        <span class="s2">&lt;</span><span class="s4">activity</span>
+            <span class="s1">android:name</span><span class="s3">=&quot;.UserProfile&quot;</span>
+            <span class="s1">android:exported</span><span class="s3">=&quot;true&quot; </span><span class="s2">/&gt;</span>
+
+        <span class="s2">&lt;</span><span class="s4">activity</span>
+            <span class="s1">android:name</span><span class="s3">=&quot;.Punches&quot;</span>
+            <span class="s1">android:exported</span><span class="s3">=&quot;true&quot; </span><span class="s2">/&gt;</span>
+    <span class="s2">&lt;/</span><span class="s4">application</span><span class="s2">&gt;</span>
+
+<span class="s2">&lt;/</span><span class="s4">manifest</span><span class="s2">&gt;</span></pre>
+</body>
+</html>

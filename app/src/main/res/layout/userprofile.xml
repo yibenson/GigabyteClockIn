@@ -1,0 +1,181 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:theme="@style/UserProfileTheme">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+
+        <androidx.cardview.widget.CardView
+            android:id="@+id/cameraWrapper"
+            android:layout_width="150dp"
+            android:layout_height="150dp"
+            android:layout_gravity="center_horizontal"
+            android:foreground="@drawable/ring"
+            android:padding="-10dp"
+            android:layout_marginTop="20dp"
+            app:cardCornerRadius="360dp"
+            app:cardElevation="0dp">
+
+            <ImageView
+                android:id="@+id/profile_photo"
+                android:layout_width="150dp"
+                android:layout_height="150dp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.0"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+        </androidx.cardview.widget.CardView>
+
+        <TextView
+            android:layout_marginStart="8dp"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_marginTop="12dp"
+            android:layout_marginBottom="8dp"
+            android:text="ACCOUNT INFORMATION"
+            android:textSize="12sp"
+            android:singleLine="true"
+            android:ellipsize="end" />
+
+        <TextView
+            android:id="@+id/profile_username"
+            android:layout_marginStart="8dp"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_marginTop="8dp"
+            android:layout_marginBottom="6dp"
+            android:text="Name: Benson Yi"
+            android:textSize="20sp"
+            android:singleLine="true"
+            android:ellipsize="end" />
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="2dp"
+            android:backgroundTint="@color/design_default_color_primary_variant" />
+
+        <TextView
+            android:id="@+id/profile_email"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_marginStart="8dp"
+            android:layout_marginTop="6dp"
+            android:layout_marginBottom="6dp"
+            android:text="Email: yifirestar64@gmail.com"
+            android:singleLine="true"
+            android:ellipsize="end"
+            android:textSize="20sp"/>
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="2dp"
+            android:backgroundTint="@color/design_default_color_primary_variant" />
+
+        <TextView
+            android:id="@+id/profile_phone"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_marginStart="8dp"
+            android:layout_marginTop="6dp"
+            android:layout_marginBottom="6dp"
+            android:text="Phone: 510-837-8123"
+            android:textSize="20sp"
+            android:singleLine="true"
+            android:ellipsize="end"/>
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="2dp"
+            android:backgroundTint="@color/design_default_color_primary_variant" />
+
+        <TextView
+            android:id="@+id/profile_wage"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_marginTop="6dp"
+            android:layout_marginBottom="6dp"
+            android:layout_marginStart="8dp"
+            android:text="Wage: $123"
+            android:textSize="20sp"
+            android:singleLine="true"
+            android:ellipsize="end"/>
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="2dp"
+            android:backgroundTint="@color/design_default_color_primary_variant" />
+
+        <TextView
+            android:id="@+id/view_punches"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_marginTop="6dp"
+            android:layout_marginBottom="6dp"
+            android:layout_marginStart="8dp"
+            android:text="View Punches"
+            android:textSize="20sp"
+            android:singleLine="true"
+            android:ellipsize="end"/>
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="2dp"
+            android:backgroundTint="@color/design_default_color_primary_variant" />
+
+        <org.eazegraph.lib.charts.BarChart
+            android:id="@+id/profile_barchart"
+            android:layout_width="388dp"
+            android:layout_height="239dp"
+            android:layout_marginTop="32dp"
+            android:padding="10dp"
+            app:egBarWidth="20dp"
+            app:egFixedBarWidth="true"
+            app:egLegendHeight="40dp"
+            android:layout_gravity="center_horizontal"/>
+
+        <org.eazegraph.lib.charts.PieChart
+            android:id="@+id/piechart"
+            android:layout_width="match_parent"
+            android:layout_height="300dp"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginTop="32dp"
+            android:padding="8dp"
+            app:egLegendTextSize="18sp"
+            app:egUsePieRotation="true"
+            app:egValueTextSize="36sp" />
+
+        <org.eazegraph.lib.charts.ValueLineChart
+            android:id="@+id/cubiclinechart"
+            android:layout_width="378dp"
+            android:layout_height="169dp"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginTop="32dp"
+            app:egCurveSmoothness="0.4"
+            app:egIndicatorLineColor="#FE6DA8"
+            app:egLegendHeight="40dp"
+            app:egShowStandardValue="true"
+            app:egUseCubic="true"
+            app:egUseOverlapFill="true" />
+
+        <ImageView
+            android:id="@+id/photoView"
+            android:layout_width="match_parent"
+            android:layout_height="150dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.0"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+    </LinearLayout>
+
+
+
+</ScrollView>
