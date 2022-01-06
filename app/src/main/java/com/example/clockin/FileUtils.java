@@ -3,6 +3,7 @@ package com.example.clockin;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.media.Image;
 import android.os.Environment;
 import android.util.Base64;
 import android.util.Log;
@@ -69,6 +70,13 @@ public class FileUtils {
         byteBuffer.get(bytes);
         byte[] clonedBytes = bytes.clone();
         return BitmapFactory.decodeByteArray(clonedBytes, 0, clonedBytes.length);
+    }
+
+    public static Bitmap ImagetoBitmap(Image image) {
+        ByteBuffer buffer = image.getPlanes()[0].getBuffer();
+        byte[] bytes = new byte[buffer.remaining()];
+        buffer.get(bytes);
+        return BitmapFactory.decodeByteArray(bytes,0,bytes.length,null);
     }
 
     public static String getBase64String(Bitmap bitmap) {

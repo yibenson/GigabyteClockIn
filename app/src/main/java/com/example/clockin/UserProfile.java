@@ -130,7 +130,7 @@ public class UserProfile extends AppCompatActivity {
                             JSONObject jsonObject = new JSONObject();
                             JSONArray jsonArray = response.getJSONArray("result");
                             for (int i = 0; i < jsonArray.length(); i++) {
-                                if (jsonArray.getJSONObject(i).getString("user").equals(name)) {
+                                if (jsonArray.getJSONObject(i).getString("name").equals(name)) {
                                     jsonObject = jsonArray.getJSONObject(i);
                                 }
                             }
@@ -138,7 +138,7 @@ public class UserProfile extends AppCompatActivity {
                             phone.setText("Phone: " + jsonObject.getString("phone"));
                             email.setText("Email: " + jsonObject.getString("mail"));
                             wage.setText("Wage: " + jsonObject.getString("wage"));
-                            byte[] decodedString = Base64.decode(jsonObject.getString("face"), Base64.DEFAULT);
+                            byte[] decodedString = Base64.decode(jsonObject.getString("face").replace("\\n", "\n"), Base64.DEFAULT);
                             Bitmap decodedByte = BitmapFactory.decodeByteArray(decodedString, 0, decodedString.length);
                             photo.setImageBitmap(decodedByte);
                         }

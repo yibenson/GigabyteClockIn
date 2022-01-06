@@ -1,6 +1,7 @@
 package com.example.clockin;
 
 import android.content.Context;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -23,7 +24,19 @@ public class PunchesAdapter extends RecyclerView.Adapter<PunchesAdapter.ViewHold
     // data is passed into the constructor
     PunchesAdapter(Context context, JSONArray data) {
         this.mInflater = LayoutInflater.from(context);
+        if (data.length() == 0) {
+            JSONArray nullArray = new JSONArray();
+            try {
+                nullArray.put(0, "No data detected");
+                nullArray.put(1, "No data detected");
+                nullArray.put(2, "No data detected");
+                data.put(0, nullArray);
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+        }
         this.mData = data;
+        Log.v("Punches", mData.toString());
     }
 
     // inflates the row layout from xml when needed

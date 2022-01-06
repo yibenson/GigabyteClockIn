@@ -94,6 +94,8 @@ public class MainActivity extends AppCompatActivity {
             body.put("password", password.getText().toString());
             body.put("account", email.getText().toString());
             Log.v("Response", body.toString());
+
+
             VolleyDataRequester.withSelfCertifiedHttps(getApplicationContext())
                     .setUrl( host)
                     .setBody( body )
@@ -116,6 +118,7 @@ public class MainActivity extends AppCompatActivity {
                         }
                     })
                     .requestJson();
+
         }
 
     }

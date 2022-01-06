@@ -137,7 +137,9 @@ public class UserRegistrationWindow extends AppCompatActivity implements Adapter
                 .requestJson();
         Intent intent = new Intent(this, FaceClockIn.class);
         intent.putExtra("Purpose", "Identify");
+        intent.putExtra("company_number", getIntent().getStringExtra("company_number"));
         startActivity(intent);
+        finish();
     }
 
     private boolean emptyForm() {

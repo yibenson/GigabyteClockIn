@@ -58,13 +58,21 @@ public class EmployeesAdapter extends RecyclerView.Adapter<EmployeesAdapter.View
             holder.clockedIn = employee.getString("status").equals("ON");
             holder.color();
             String base64 = employee.getString("image");
-            Log.v("Employees", base64);
-            String base = base64.substring(0, base64.length() - 209);
-            byte[] decodedString = Base64.decode(base, Base64.DEFAULT);
+            base64 = base64.replace("\\n", "\n");
+            byte[] decodedString = Base64.decode(base64.getBytes(), Base64.DEFAULT);
             Bitmap decodedByte = BitmapFactory.decodeByteArray(decodedString, 0, decodedString.length);
             holder.photo.setImageBitmap(decodedByte);
         } catch (JSONException e) {
             e.printStackTrace();
+        }
+    }
+
+    public static void largeLog(String tag, String content) {
+        if (content.length() > 4000) {
+            Log.d(tag, content.substring(0, 4000));
+            largeLog(tag, content.substring(4000));
+        } else {
+            Log.d(tag, content);
         }
     }
 

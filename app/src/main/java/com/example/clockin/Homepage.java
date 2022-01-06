@@ -33,11 +33,10 @@ public class Homepage extends AppCompatActivity implements View.OnClickListener 
     private String username;
     private String RECORD_HOST = "https://52.139.218.209:443/record/get_user_record";
     private String CLOCK_HOST = "https://52.139.218.209:443/identify/clockin";
-    private JSONObject userObject;
     private boolean clockedin = false;
     private Chronometer chronometer;
     private long difference;
-    private String earliest_date = "1900/01/01 00:00:00";
+    private Date earliest_date;
 
 
     protected void onCreate(Bundle savedInstanceState) {
@@ -51,7 +50,6 @@ public class Homepage extends AppCompatActivity implements View.OnClickListener 
         ImageButton companyinfo = findViewById(R.id.companyinfo);
         if (!getIntent().getExtras().getBoolean("manager")) {
             companyinfo.setBackgroundResource(R.drawable.info_user);
-            Toast.makeText(this, "Failed line 53", Toast.LENGTH_LONG).show();
         }
         chronometer = findViewById(R.id.chronometer);
         clockin.setOnClickListener(this);
@@ -140,37 +138,35 @@ public class Homepage extends AppCompatActivity implements View.OnClickListener 
                 .setBody(body)
                 .setMethod(VolleyDataRequester.Method.POST )
                 .setJsonResponseListener(response -> {
+                    Log.v("Homepage", response.toString());
                     try {
                         if (!response.getBoolean("status")) {
                             chronometer.setText(R.string.error);
                         } else {
                             JSONArray jsonArray = response.getJSONArray("result");
                             SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
-                            Date earliest = simpleDateFormat.parse(earliest_date);
+                            earliest_date = simpleDateFormat.parse("1900/01/01 00:00:00");
                             for (int i = 0; i < jsonArray.length(); i++) {
-                                jsonObject[0] = jsonArray.getJSONObject(i);
-                                if (jsonObject[0].getString("user").equals(username)) {
-                                    Date date = simpleDateFormat.parse(jsonObject[0].getString("date"));
-                                    if (earliest.compareTo(date) < 0) {
-                                        userObject = jsonObject[0];
-                                        earliest = date;
+                                JSONObject temp = jsonArray.getJSONObject(i);
+                                if (temp.getString("user").equals(username)) {
+                                    Date date = simpleDateFormat.parse(temp.getString("date"));
+                                    if (earliest_date.compareTo(date) < 0) {
+                                        jsonObject[0] = temp;
+                                        earliest_date = date;
                                     }
                                 }
                             }
-                            Log.v("Homepage", userObject.toString());
-                            if (userObject.getString("status").equals("OFF") || jsonObject[0] == null) {
+                            if (jsonObject[0].getString("status").equals("OFF")) {
                                 clockedin = false;
                                 chronometer.setText(R.string.clocked_out);
                             } else {
                                 clockedin = true;
-                                Date date = simpleDateFormat.parse(userObject.getString("date"));
+                                Date date = simpleDateFormat.parse(jsonObject[0].getString("date"));
                                 printDifference(date, calendar.getTime());
                             }
                         }
-                    } catch (JSONException | ParseException e) {
-                        Log.v("Timer", response.toString());
-                        Log.v("Timer", "JSONException | ParseException detected");
-                        chronometer.setText(R.string.error);
+                    } catch (JSONException | ParseException | NullPointerException e) {
+                        chronometer.setText(R.string.clocked_out);
                     }
                 }).requestJson();
     }
@@ -182,6 +178,10 @@ public class Homepage extends AppCompatActivity implements View.OnClickListener 
         alertDialog.setButton(AlertDialog.BUTTON_POSITIVE, "Yes",
                 (dialog, which) -> {
                     clock(status);
+                    Intent intent = new Intent(this, FaceClockIn.class);
+                    intent.putExtra("company_number", getIntent().getStringExtra("company_number"));
+                    intent.putExtra("Purpose", "Identify");
+                    startActivity(intent);
                     finish();
                 }
         );

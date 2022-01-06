@@ -83,7 +83,7 @@ public class CompanyRegistrationWindow extends AppCompatActivity {
         body.put("account", company_username.getText().toString());
         body.put("password", password.getText().toString());
         body.put("mail", email.getText().toString());
-        body.put("workplace", company_name.getText().toString());
+        body.put("workspace", company_name.getText().toString());
         body.put("third_party", "");
         Log.v("Response", body.toString());
         VolleyDataRequester.withSelfCertifiedHttps(this)

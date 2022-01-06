@@ -101,11 +101,11 @@ public class Punches extends AppCompatActivity implements PunchesAdapter.ItemCli
                             JSONObject jsonObject = response.getJSONObject("result");
                             jsonObject = jsonObject.getJSONObject(username);
                             punches = (JSONArray) jsonObject.get("detail");
-                            setUpRecyclerView();
                         }
                     } catch (JSONException e) {
-                        e.printStackTrace();
+                        punches = new JSONArray();
                     }
+                    setUpRecyclerView();
                 }).requestJson();
 
     }

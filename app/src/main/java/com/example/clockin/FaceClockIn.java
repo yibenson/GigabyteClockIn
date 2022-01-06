@@ -25,6 +25,7 @@ import androidx.appcompat.app.ActionBarDrawerToggle;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.renderscript.ScriptGroup;
 import android.util.Log;
 import android.view.View;
 
@@ -35,6 +36,7 @@ import androidx.camera.core.ImageProxy;
 import androidx.camera.core.Preview;
 import androidx.camera.lifecycle.ProcessCameraProvider;
 import androidx.camera.view.PreviewView;
+import androidx.cardview.widget.CardView;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.core.view.GravityCompat;
@@ -58,6 +60,7 @@ import android.widget.Toast;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.File;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.util.Arrays;
@@ -93,12 +96,14 @@ public class FaceClockIn extends AppCompatActivity implements NavigationView.OnN
     private String purpose;
 
     private Bitmap bitmap;
+    private CardView cameraWrapper;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.faceclockin);
         Intent intent = getIntent();
+        cameraWrapper = findViewById(R.id.clockIncameraWrapper);
         // only display nav drawer when we're using this for identification
         if (intent.getExtras().get("Purpose").equals("Identify")) {
             purpose = "Identify";
@@ -129,6 +134,7 @@ public class FaceClockIn extends AppCompatActivity implements NavigationView.OnN
         }
     }
 
+    @SuppressLint("UnsafeOptInUsageError")
     private void bindUseCases() {
         cameraProviderFuture = ProcessCameraProvider.getInstance(this);
         cameraProviderFuture.addListener(() -> {
@@ -147,9 +153,8 @@ public class FaceClockIn extends AppCompatActivity implements NavigationView.OnN
                 // bind image analysis
                 ImageAnalysis imageAnalysis = new ImageAnalysis.Builder().build();
                 analysisExecutor = Executors.newSingleThreadExecutor();
-                imageAnalysis.setAnalyzer(analysisExecutor, image -> {
-                    rotation = image.getImageInfo().getRotationDegrees();
-                });
+                LivenessAnalyzer livenessAnalyzer = new LivenessAnalyzer();
+                imageAnalysis.setAnalyzer(analysisExecutor, livenessAnalyzer);
 
                 // bind image capture
                 ImageCapture imageCapture =
@@ -161,50 +166,43 @@ public class FaceClockIn extends AppCompatActivity implements NavigationView.OnN
                         imageCapture.takePicture(captureExecutor, new ImageCapture.OnImageCapturedCallback() {
                             @Override
                             public void onCaptureSuccess(@NonNull ImageProxy image) {
-                                saveFace(image);
+                                if (livenessAnalyzer.getLiveness()) {
+                                    cropFace(image);
+                                } else {
+                                    runOnUiThread(() -> Toast.makeText(getApplicationContext(), "Please blink to ensure live image", Toast.LENGTH_LONG).show());
+                                }
                                 image.close();
                             }
                         }));
-                cameraProvider.bindToLifecycle(this, cameraSelector, imageAnalysis, preview, imageCapture);
+                cameraProvider.bindToLifecycle(this, cameraSelector, imageAnalysis, imageCapture, preview);
             } catch (ExecutionException | InterruptedException e) {
                 // Should never be reached
             }
         }, ContextCompat.getMainExecutor(this));
     }
 
-    private void saveFace(ImageProxy image) {
+    private void cropFace(ImageProxy image) {
         this.bitmap = FileUtils.toBitmap(image);
-        InputImage inputImage = InputImage.fromBitmap(bitmap, 0);
+        InputImage inputImage = InputImage.fromBitmap(bitmap, rotation);
         faceDetector = FaceDetection.getClient();
-        faceDetector.process(inputImage).addOnSuccessListener(faces -> {
-            if (!faces.isEmpty()) {
-                cropFace();
-            } else {
-                Toast.makeText(getApplicationContext(), "No faces detected", Toast.LENGTH_LONG).show();
-            }
-        });
-    }
-
-    private void cropFace() {
-        Bitmap image = this.bitmap;
-        InputImage inputImage = InputImage.fromBitmap(image, 0);
-        FaceDetector faceDetector = FaceDetection.getClient();
         faceDetector.process(inputImage).addOnSuccessListener(faces -> {
             if (!faces.isEmpty()) {
                 Face face = faces.get(0);
                 Rect rect = face.getBoundingBox();
                 try {
-                    Bitmap croppedBmp = Bitmap.createBitmap(image, rect.left, rect.top, rect.width(), rect.height());
+                    Bitmap croppedBmp = Bitmap.createBitmap(bitmap, rect.left, rect.top, rect.width(), rect.height());
                     Bitmap compressedBitmap = Bitmap.createScaledBitmap(croppedBmp, 150, 150, false);
                     String base64 = FileUtils.getBase64String(compressedBitmap);
-                    FileUtils.saveImage(compressedBitmap, this);
                     send(compressedBitmap, base64);
                 } catch (IllegalArgumentException e) {
                     e.printStackTrace();
                 }
+            } else {
+                Toast.makeText(getApplicationContext(), "No live faces detected", Toast.LENGTH_LONG).show();
             }
         });
     }
+
 
     private void send(Bitmap bitmap, String base64) {
         InputImage inputImage = InputImage.fromBitmap(bitmap, 0);
@@ -285,6 +283,8 @@ public class FaceClockIn extends AppCompatActivity implements NavigationView.OnN
         dialog.show();
     }
 
+
+
     @Override
     public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
@@ -310,6 +310,8 @@ public class FaceClockIn extends AppCompatActivity implements NavigationView.OnN
         return true;
     }
 
+
+
     @Override
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
         if (actionBarDrawerToggle.onOptionsItemSelected(item)) {
@@ -317,9 +319,6 @@ public class FaceClockIn extends AppCompatActivity implements NavigationView.OnN
         }
         return super.onOptionsItemSelected(item);
     }
-
-
-
 
 
     @Override
@@ -332,7 +331,7 @@ public class FaceClockIn extends AppCompatActivity implements NavigationView.OnN
             case R.id.base_settings:
                 // todo
             case R.id.base_logout:
-                // todo
+                finish();
         }
         drawerLayout.closeDrawer(GravityCompat.START);
         return true;
