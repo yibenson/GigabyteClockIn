@@ -141,7 +141,7 @@ public class FaceClockIn extends AppCompatActivity implements NavigationView.OnN
                         imageCapture.takePicture(captureExecutor, new ImageCapture.OnImageCapturedCallback() {
                             @Override
                             public void onCaptureSuccess(@NonNull ImageProxy image) {
-                                cropFace(image);
+                                saveFace(image);
                                 image.close();
                             }
 
@@ -157,39 +157,41 @@ public class FaceClockIn extends AppCompatActivity implements NavigationView.OnN
         }, ContextCompat.getMainExecutor(this));
     }
 
-    private void cropFace(ImageProxy image) {
-        String imgString = FileUtils.saveImage(FileUtils.toBitmap(image), getApplicationContext());
-        File f = FileUtils.getPhotoFileUri(imgString, getApplicationContext());
-        try {
-            bitmap = BitmapFactory.decodeStream(new FileInputStream(f));
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        }
-        InputImage inputImage = InputImage.fromBitmap(bitmap, rotation);
+    private void saveFace(ImageProxy image) {
+        this.bitmap = FileUtils.toBitmap(image);
+        InputImage inputImage = InputImage.fromBitmap(bitmap, 0);
         faceDetector = FaceDetection.getClient();
         faceDetector.process(inputImage).addOnSuccessListener(faces -> {
-            Log.v("Response", "Processing faces");
             if (!faces.isEmpty()) {
-                Rect rect = faces.get(0).getBoundingBox();
-                Log.v("Response", "Cropping faces");
-                try {
-                    Bitmap croppedBmp = Bitmap.createBitmap(bitmap, rect.left, rect.top, rect.width(), rect.height());
-                    Bitmap compressedBitmap = Bitmap.createScaledBitmap(croppedBmp, 150, 150, false);
-                    String base64 = FileUtils.getBase64String(compressedBitmap);
-                    send(compressedBitmap, base64);
-                } catch (IllegalArgumentException e) {
-                    e.printStackTrace();
-                }
+                cropFace();
             } else {
-                // Something other than toasts because toasts are fucking garbage
-                Toast.makeText(getApplicationContext(), "No live faces detected", Toast.LENGTH_LONG).show();
+                Toast.makeText(getApplicationContext(), "No faces detected", Toast.LENGTH_LONG).show();
             }
         });
     }
 
+    private void cropFace() {
+        Bitmap image = this.bitmap;
+        InputImage inputImage = InputImage.fromBitmap(image, 0);
+        FaceDetector faceDetector = FaceDetection.getClient();
+        faceDetector.process(inputImage).addOnSuccessListener(faces -> {
+            if (!faces.isEmpty()) {
+                Face face = faces.get(0);
+                Rect rect = face.getBoundingBox();
+                try {
+                    Bitmap croppedBmp = Bitmap.createBitmap(image, rect.left, rect.top, rect.width(), rect.height());
+                    Bitmap compressedBitmap = Bitmap.createScaledBitmap(croppedBmp, 150, 150, false);
+                    String base64 = FileUtils.getBase64String(compressedBitmap);
+                    FileUtils.saveImage(compressedBitmap, this);
+                    send(compressedBitmap, base64);
+                } catch (IllegalArgumentException e) {
+                    e.printStackTrace();
+                }
+            }
+        });
+    }
 
     private void send(Bitmap bitmap, String base64) {
-        Log.v("Response", "Sending faces");
         InputImage inputImage = InputImage.fromBitmap(bitmap, 0);
         FaceDetectorOptions options = new FaceDetectorOptions.Builder()
                 .setLandmarkMode(FaceDetectorOptions.LANDMARK_MODE_ALL).build();
@@ -209,6 +211,7 @@ public class FaceClockIn extends AppCompatActivity implements NavigationView.OnN
                     e.printStackTrace();
                 }
             }
+
         }).addOnCompleteListener(task -> {
             if (getIntent().getStringExtra("Purpose").equals("Register")) {
                 Intent intent = new Intent(getApplicationContext(), UserRegistrationWindow.class);
