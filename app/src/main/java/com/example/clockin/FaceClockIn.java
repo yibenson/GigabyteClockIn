@@ -144,7 +144,7 @@ public class FaceClockIn extends AppCompatActivity implements NavigationView.OnN
                                 image.close();
                             }
                         }));
-                cameraProvider.bindToLifecycle(this, cameraSelector, imageAnalysis, imageCapture, preview);
+                cameraProvider.bindToLifecycle(this, cameraSelector, imageCapture, preview);
             } catch (ExecutionException | InterruptedException e) {
                 e.printStackTrace();
             }

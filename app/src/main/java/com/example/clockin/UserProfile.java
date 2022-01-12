@@ -6,6 +6,7 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.os.Bundle;
+import android.os.Parcelable;
 import android.util.Base64;
 import android.util.Log;
 import android.view.MenuItem;
@@ -42,6 +43,11 @@ public class UserProfile extends AppCompatActivity implements View.OnClickListen
     private TextView view_punches;
     private ImageView photo;
 
+    private JSONObject info;
+
+    private Intent intent;
+    private Intent punch_intent;
+
 
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -58,12 +64,14 @@ public class UserProfile extends AppCompatActivity implements View.OnClickListen
         photo = findViewById(R.id.profile_photo);
         view_punches = findViewById(R.id.view_punches);
 
+        intent = new Intent(getApplicationContext(), EditPage.class);
+
         // populate textviews/photo with user's info
         fillInfo();
 
         view_punches.setOnClickListener(view -> {
-            Intent intent = new Intent(this, Punches.class);
-            intent.putExtras(getIntent());
+            punch_intent = new Intent(this, Punches.class);
+            punch_intent.putExtras(getIntent());
             startActivity(intent);
         });
 
@@ -118,9 +126,33 @@ public class UserProfile extends AppCompatActivity implements View.OnClickListen
 
     @Override
     public void onClick(View view) {
+        intent.putExtra("company_number", getIntent().getStringExtra("company_number"));
+        intent.putExtra("username", getIntent().getStringExtra("username"));
         switch (view.getId()) {
             case R.id.profile_username:
-
+                intent.putExtra("Purpose", 0);
+                intent.putExtra("Info", info.toString());
+                startActivity(intent);
+                fillInfo();
+                break;
+            case R.id.profile_email:
+                intent.putExtra("Purpose", 2);
+                intent.putExtra("Info", info.toString());
+                startActivity(intent);
+                fillInfo();
+                break;
+            case R.id.profile_phone:
+                intent.putExtra("Purpose", 1);
+                intent.putExtra("Info", info.toString());
+                startActivity(intent);
+                fillInfo();
+                break;
+            case R.id.profile_wage:
+                intent.putExtra("Purpose", 3);
+                intent.putExtra("Info", info.toString());
+                startActivity(intent);
+                fillInfo();
+                break;
         }
     }
 
@@ -145,6 +177,8 @@ public class UserProfile extends AppCompatActivity implements View.OnClickListen
                                     jsonObject = jsonArray.getJSONObject(i);
                                 }
                             }
+                            info = jsonObject;
+                            Log.v("Response", info.toString());
                             username.setText(getString(R.string.name, jsonObject.getString("name")));
                             phone.setText(getString(R.string.phone_number, jsonObject.getString("phone")));
                             email.setText(getString(R.string.email, jsonObject.getString("mail")));
