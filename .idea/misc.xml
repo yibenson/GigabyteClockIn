@@ -17,8 +17,10 @@
         <entry key="app/src/main/res/layout/confirm_dialog.xml" value="0.26666666666666666" />
         <entry key="app/src/main/res/layout/confirm_photo.xml" value="0.2515625" />
         <entry key="app/src/main/res/layout/employees.xml" value="0.26666666666666666" />
+        <entry key="app/src/main/res/layout/face_clockin.xml" value="0.4036458333333333" />
         <entry key="app/src/main/res/layout/faceclockin.xml" value="0.2515625" />
         <entry key="app/src/main/res/layout/homepage.xml" value="0.375" />
+        <entry key="app/src/main/res/layout/info_edit.xml" value="0.4036458333333333" />
         <entry key="app/src/main/res/layout/punch_loading.xml" value="0.23229166666666667" />
         <entry key="app/src/main/res/layout/punch_row.xml" value="0.5" />
         <entry key="app/src/main/res/layout/punches.xml" value="0.33" />

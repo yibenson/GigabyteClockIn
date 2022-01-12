@@ -19,20 +19,20 @@
 
     // User registration form
     <string name="user_registration">員工註冊</string>
-    <string name="company_account_number">公司帳號</string>
-    <string name="user_username">員工姓名</string>
-    <string name="phone_number">員工聯絡電話</string>
-    <string name="birthday">生日</string>
-    <string name="sex">性別</string>
+    <string name="set_user_email">欲設定員工電子郵件</string>
+    <string name="set_username">員工姓名</string>
+    <string name="set_phone_number">員工聯絡電話</string>
+    <string name="set_birthday">生日</string>
+    <string name="set_sex">性別</string>
     <string-array name="性別">
         <item>男性</item>
         <item>奴性</item>
         <item>別的</item>
     </string-array>
     // mail
-    <string name="manager">是否為管理職</string>
-    <string name="wage">時薪</string>
-    <string name="add_photo">添加照片</string>
+    <string name="set_manager">是否為管理職</string>
+    <string name="set_wage">薪水</string>
+    <string name="set_photo">添加照片</string>
 
     // clockin
     <string name="clockin">員工打卡</string>
@@ -48,10 +48,21 @@
     <string name="cancel">取消</string>
 
     // punches
+
     <string name="in">上班</string>
     <string name="out">下班</string>
     <string name="time">總時間</string>
     <string name="date_window">時間段: %1$s - %2$s</string>
+
+    // user profile
+    <string name="account_info">帳戶信息</string>
+    <string name="name">名稱: %1$s</string>
+    <string name="email">電子郵件: %1$s</string>
+    <string name="user_wage">薪水: %1$s</string>
+    <string name="phone_number">電話號碼: %1$s</string>
+    <string name="open_punches">查看打卡記錄</string>
+
+
 
     // welcome
     <string name="morning">早安, %1$s</string>

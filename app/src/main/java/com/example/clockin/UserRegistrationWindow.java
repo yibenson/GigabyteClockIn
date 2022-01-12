@@ -155,6 +155,8 @@ public class UserRegistrationWindow extends AppCompatActivity implements Adapter
                     String date = i + "." + i1 + "." + i2;
                     binding.birthday.setText(date);
                 }, year, month, day);
+        picker.getDatePicker().setSpinnersShown(true);
+        picker.getDatePicker().setCalendarViewShown(false);
         picker.show();
     }
 

@@ -130,7 +130,7 @@ public class FaceClockIn extends AppCompatActivity implements NavigationView.OnN
                         imageCapture.takePicture(captureExecutor, new ImageCapture.OnImageCapturedCallback() {
                             @Override
                             public void onCaptureSuccess(@NonNull ImageProxy image) {
-                                if (livenessAnalyzer.getLiveness()) {
+                                if (livenessAnalyzer.getLiveness() || true) {
                                     cropFace(image);
                                 } else {
                                     // TODO: Make into alert dialog?
@@ -293,13 +293,14 @@ public class FaceClockIn extends AppCompatActivity implements NavigationView.OnN
                 Intent intent = new Intent(this, UserRegistrationWindow.class);
                 intent.putExtra("company_number", getIntent().getStringExtra("company_number"));
                 startActivity(intent);
+                break;
             case R.id.base_settings:
                 // todo: should contain language swap / maybe theme?
             case R.id.base_logout:
                 startActivity(new Intent(this, MainActivity.class));
                 finish();
         }
-        drawerLayout.closeDrawer(GravityCompat.START);
+        binding.myDrawerLayout.closeDrawer(GravityCompat.START);
         return true;
     }
 }

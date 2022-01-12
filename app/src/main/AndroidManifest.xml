@@ -50,6 +50,10 @@
             android:exported="true" />
 
         <activity
+            android:name=".EditPage"
+            android:exported="true" />
+
+        <activity
             android:name=".Punches"
             android:exported="true" />
     </application>

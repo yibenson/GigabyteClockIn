@@ -33,7 +33,7 @@ import org.json.JSONObject;
 import java.util.HashMap;
 import java.util.Objects;
 
-public class UserProfile extends AppCompatActivity {
+public class UserProfile extends AppCompatActivity implements View.OnClickListener {
     private String HOST = "https://52.139.218.209:443/user/get_user_profile";
     private TextView username;
     private TextView email;
@@ -66,6 +66,8 @@ public class UserProfile extends AppCompatActivity {
             intent.putExtras(getIntent());
             startActivity(intent);
         });
+
+        /**
 
         // bar chart
         BarChart mBarChart = (BarChart) findViewById(R.id.profile_barchart);
@@ -110,7 +112,16 @@ public class UserProfile extends AppCompatActivity {
         mPieChart.addPieSlice(new PieModel("Eating", 9, Color.parseColor("#FED70E")));
 
         mPieChart.startAnimation();
+         */
 
+    }
+
+    @Override
+    public void onClick(View view) {
+        switch (view.getId()) {
+            case R.id.profile_username:
+
+        }
     }
 
     @SuppressLint("SetTextI18n")
@@ -134,10 +145,10 @@ public class UserProfile extends AppCompatActivity {
                                     jsonObject = jsonArray.getJSONObject(i);
                                 }
                             }
-                            username.setText("Name: " + jsonObject.getString("name"));
-                            phone.setText("Phone: " + jsonObject.getString("phone"));
-                            email.setText("Email: " + jsonObject.getString("mail"));
-                            wage.setText("Wage: " + jsonObject.getString("wage"));
+                            username.setText(getString(R.string.name, jsonObject.getString("name")));
+                            phone.setText(getString(R.string.phone_number, jsonObject.getString("phone")));
+                            email.setText(getString(R.string.email, jsonObject.getString("mail")));
+                            wage.setText(getString(R.string.user_wage,jsonObject.getString("wage") ));
                             byte[] decodedString = Base64.decode(jsonObject.getString("face").replace("\\n", "\n"), Base64.DEFAULT);
                             Bitmap decodedByte = BitmapFactory.decodeByteArray(decodedString, 0, decodedString.length);
                             photo.setImageBitmap(decodedByte);
@@ -156,6 +167,7 @@ public class UserProfile extends AppCompatActivity {
         }
         return super.onOptionsItemSelected(item);
     }
+
 
 
 }

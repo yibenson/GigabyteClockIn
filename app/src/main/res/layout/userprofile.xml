@@ -40,7 +40,7 @@
             android:layout_height="match_parent"
             android:layout_marginTop="12dp"
             android:layout_marginBottom="8dp"
-            android:text="ACCOUNT INFORMATION"
+            android:text="@string/account_info"
             android:textSize="12sp"
             android:singleLine="true"
             android:ellipsize="end" />
@@ -52,7 +52,7 @@
             android:layout_height="match_parent"
             android:layout_marginTop="8dp"
             android:layout_marginBottom="6dp"
-            android:text="Name: Benson Yi"
+            android:text="@string/name"
             android:textSize="20sp"
             android:singleLine="true"
             android:ellipsize="end" />
@@ -68,7 +68,7 @@
             android:layout_marginStart="8dp"
             android:layout_marginTop="6dp"
             android:layout_marginBottom="6dp"
-            android:text="Email: yifirestar64@gmail.com"
+            android:text="@string/email"
             android:singleLine="true"
             android:ellipsize="end"
             android:textSize="20sp"/>
@@ -85,7 +85,7 @@
             android:layout_marginStart="8dp"
             android:layout_marginTop="6dp"
             android:layout_marginBottom="6dp"
-            android:text="Phone: 510-837-8123"
+            android:text="@string/phone_number"
             android:textSize="20sp"
             android:singleLine="true"
             android:ellipsize="end"/>
@@ -102,7 +102,7 @@
             android:layout_marginTop="6dp"
             android:layout_marginBottom="6dp"
             android:layout_marginStart="8dp"
-            android:text="Wage: $123"
+            android:text="@string/set_wage"
             android:textSize="20sp"
             android:singleLine="true"
             android:ellipsize="end"/>
@@ -119,7 +119,7 @@
             android:layout_marginTop="6dp"
             android:layout_marginBottom="6dp"
             android:layout_marginStart="8dp"
-            android:text="View Punches"
+            android:text="@string/set_photo"
             android:textSize="20sp"
             android:singleLine="true"
             android:ellipsize="end"/>
@@ -128,51 +128,6 @@
             android:layout_width="match_parent"
             android:layout_height="2dp"
             android:backgroundTint="@color/design_default_color_primary_variant" />
-
-        <org.eazegraph.lib.charts.BarChart
-            android:id="@+id/profile_barchart"
-            android:layout_width="388dp"
-            android:layout_height="239dp"
-            android:layout_marginTop="32dp"
-            android:padding="10dp"
-            app:egBarWidth="20dp"
-            app:egFixedBarWidth="true"
-            app:egLegendHeight="40dp"
-            android:layout_gravity="center_horizontal"/>
-
-        <org.eazegraph.lib.charts.PieChart
-            android:id="@+id/piechart"
-            android:layout_width="match_parent"
-            android:layout_height="300dp"
-            android:layout_gravity="center_horizontal"
-            android:layout_marginTop="32dp"
-            android:padding="8dp"
-            app:egLegendTextSize="18sp"
-            app:egUsePieRotation="true"
-            app:egValueTextSize="36sp" />
-
-        <org.eazegraph.lib.charts.ValueLineChart
-            android:id="@+id/cubiclinechart"
-            android:layout_width="378dp"
-            android:layout_height="169dp"
-            android:layout_gravity="center_horizontal"
-            android:layout_marginTop="32dp"
-            app:egCurveSmoothness="0.4"
-            app:egIndicatorLineColor="#FE6DA8"
-            app:egLegendHeight="40dp"
-            app:egShowStandardValue="true"
-            app:egUseCubic="true"
-            app:egUseOverlapFill="true" />
-
-        <ImageView
-            android:id="@+id/photoView"
-            android:layout_width="match_parent"
-            android:layout_height="150dp"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.0"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
 
     </LinearLayout>
 
