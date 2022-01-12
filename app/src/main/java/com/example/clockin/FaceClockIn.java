@@ -17,6 +17,7 @@ import androidx.appcompat.app.ActionBarDrawerToggle;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.util.Log;
 import android.view.View;
 
 import androidx.camera.core.CameraSelector;
@@ -127,6 +128,7 @@ public class FaceClockIn extends AppCompatActivity implements NavigationView.OnN
                 });
 
                 // bind image capture
+                rotation = getWindowManager().getDefaultDisplay().getRotation();
                 ImageCapture imageCapture = new ImageCapture.Builder()
                         .setTargetRotation(rotation).build();
                 captureExecutor = Executors.newSingleThreadExecutor();
@@ -146,12 +148,15 @@ public class FaceClockIn extends AppCompatActivity implements NavigationView.OnN
     }
 
     private void cropFace(ImageProxy image) {
+        Log.v("Response", "Attempting to identify image");
         this.bitmap = FileUtils.toBitmap(image);
         InputImage inputImage = InputImage.fromBitmap(bitmap, rotation);
         faceDetector = FaceDetection.getClient();
         faceDetector.process(inputImage).addOnSuccessListener(faces -> {
+            Log.v("Response", "Processing faces");
             if (!faces.isEmpty()) {
                 Rect rect = faces.get(0).getBoundingBox();
+                Log.v("Response", "Cropping faces");
                 try {
                     Bitmap croppedBmp = Bitmap.createBitmap(bitmap, rect.left, rect.top, rect.width(), rect.height());
                     Bitmap compressedBitmap = Bitmap.createScaledBitmap(croppedBmp, 150, 150, false);
@@ -169,6 +174,7 @@ public class FaceClockIn extends AppCompatActivity implements NavigationView.OnN
 
 
     private void send(Bitmap bitmap, String base64) {
+        Log.v("Response", "Sending faces");
         InputImage inputImage = InputImage.fromBitmap(bitmap, 0);
         FaceDetectorOptions options = new FaceDetectorOptions.Builder()
                 .setLandmarkMode(FaceDetectorOptions.LANDMARK_MODE_ALL).build();
