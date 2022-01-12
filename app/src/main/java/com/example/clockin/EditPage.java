@@ -69,8 +69,10 @@ public class EditPage extends AppCompatActivity {
                     mapBody.put("enable", "true");
                     switch (purpose) {
                         case 0:
-                            mapBody.put("name", binding.textView.getText().toString());
+                            // dont change username?
+                            /**mapBody.put("name", binding.textView.getText().toString());
                             sendInfo(mapBody);
+                             */
                             break;
                         case 1:
                             mapBody.put("phone", binding.textView.getText().toString());
@@ -103,7 +105,6 @@ public class EditPage extends AppCompatActivity {
                 .setMethod(VolleyDataRequester.Method.POST )
                 .setJsonResponseListener(response -> {
                     try {
-                        Log.v("Response", response.toString());
                         if (!response.getBoolean("status")) {
                             Toast.makeText(this, R.string.error_connecting, Toast.LENGTH_LONG).show();
                         } else {
