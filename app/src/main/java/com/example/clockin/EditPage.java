@@ -65,7 +65,7 @@ public class EditPage extends AppCompatActivity {
                     mapBody.put("mail", jsonObject.getString("mail"));
                     mapBody.put("manager", jsonObject.getString("manager"));
                     mapBody.put("sex", jsonObject.getString("sex"));
-                    mapBody.put("birthday", jsonObject.getString("birthday"));
+                    mapBody.put("birthday",  jsonObject.getString("birthday").replaceAll("\\.", "/"));
                     mapBody.put("enable", "true");
                     switch (purpose) {
                         case 0:
@@ -77,7 +77,7 @@ public class EditPage extends AppCompatActivity {
                             sendInfo(mapBody);
                             break;
                         case 2:
-                            mapBody.put("email", binding.textView.getText().toString());
+                            mapBody.put("mail", binding.textView.getText().toString());
                             sendInfo(mapBody);
                             break;
                         case 3:
