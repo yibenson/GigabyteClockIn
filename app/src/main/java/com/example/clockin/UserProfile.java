@@ -15,6 +15,10 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.activity.result.ActivityResultCallback;
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContract;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -34,7 +38,7 @@ import org.json.JSONObject;
 import java.util.HashMap;
 import java.util.Objects;
 
-public class UserProfile extends AppCompatActivity implements View.OnClickListener {
+public class UserProfile extends AppCompatActivity {
     private String HOST = "https://52.139.218.209:443/user/get_user_profile";
     private TextView username;
     private TextView email;
@@ -72,60 +76,17 @@ public class UserProfile extends AppCompatActivity implements View.OnClickListen
         view_punches.setOnClickListener(view -> {
             punch_intent = new Intent(this, Punches.class);
             punch_intent.putExtras(getIntent());
-            startActivity(intent);
+            startActivity(punch_intent);
         });
 
-        /**
-
-        // bar chart
-        BarChart mBarChart = (BarChart) findViewById(R.id.profile_barchart);
-        mBarChart.addBar(new BarModel(2.3f, 0xFF123456));
-        mBarChart.addBar(new BarModel(2.f,  0xFF343456));
-        mBarChart.addBar(new BarModel(3.3f, 0xFF563456));
-        mBarChart.addBar(new BarModel(1.1f, 0xFF873F56));
-        mBarChart.addBar(new BarModel(2.7f, 0xFF56B7F1));
-        mBarChart.addBar(new BarModel(2.f,  0xFF343456));
-        mBarChart.addBar(new BarModel(0.4f, 0xFF1FF4AC));
-        mBarChart.addBar(new BarModel(4.f,  0xFF1BA4E6));
-
-        mBarChart.startAnimation();
-
-        // value line chart
-        ValueLineChart mCubicValueLineChart = (ValueLineChart) findViewById(R.id.cubiclinechart);
-
-        ValueLineSeries series = new ValueLineSeries();
-        series.setColor(0xFF56B7F1);
-
-        series.addPoint(new ValueLinePoint("Jan", 2.4f));
-        series.addPoint(new ValueLinePoint("Feb", 3.4f));
-        series.addPoint(new ValueLinePoint("Mar", .4f));
-        series.addPoint(new ValueLinePoint("Apr", 1.2f));
-        series.addPoint(new ValueLinePoint("Mai", 2.6f));
-        series.addPoint(new ValueLinePoint("Jun", 1.0f));
-        series.addPoint(new ValueLinePoint("Jul", 3.5f));
-        series.addPoint(new ValueLinePoint("Aug", 2.4f));
-        series.addPoint(new ValueLinePoint("Sep", 2.4f));
-        series.addPoint(new ValueLinePoint("Oct", 3.4f));
-        series.addPoint(new ValueLinePoint("Nov", .4f));
-        series.addPoint(new ValueLinePoint("Dec", 1.3f));
-
-        mCubicValueLineChart.addSeries(series);
-        mCubicValueLineChart.startAnimation();
-
-        PieChart mPieChart = (PieChart) findViewById(R.id.piechart);
-
-        mPieChart.addPieSlice(new PieModel("Freetime", 15, Color.parseColor("#FE6DA8")));
-        mPieChart.addPieSlice(new PieModel("Sleep", 25, Color.parseColor("#56B7F1")));
-        mPieChart.addPieSlice(new PieModel("Work", 35, Color.parseColor("#CDA67F")));
-        mPieChart.addPieSlice(new PieModel("Eating", 9, Color.parseColor("#FED70E")));
-
-        mPieChart.startAnimation();
-         */
-
+        username.setOnClickListener(view -> thing(view));
+        email.setOnClickListener(view -> thing(view));
+        phone.setOnClickListener(view -> thing(view));
+        wage.setOnClickListener(view -> thing(view));
     }
 
-    @Override
-    public void onClick(View view) {
+    public void thing(View view) {
+        Log.v("Response", "Attempting onclick");
         intent.putExtra("company_number", getIntent().getStringExtra("company_number"));
         intent.putExtra("username", getIntent().getStringExtra("username"));
         switch (view.getId()) {
@@ -133,25 +94,21 @@ public class UserProfile extends AppCompatActivity implements View.OnClickListen
                 intent.putExtra("Purpose", 0);
                 intent.putExtra("Info", info.toString());
                 startActivity(intent);
-                fillInfo();
                 break;
             case R.id.profile_email:
                 intent.putExtra("Purpose", 2);
                 intent.putExtra("Info", info.toString());
                 startActivity(intent);
-                fillInfo();
                 break;
             case R.id.profile_phone:
                 intent.putExtra("Purpose", 1);
                 intent.putExtra("Info", info.toString());
                 startActivity(intent);
-                fillInfo();
                 break;
             case R.id.profile_wage:
                 intent.putExtra("Purpose", 3);
                 intent.putExtra("Info", info.toString());
                 startActivity(intent);
-                fillInfo();
                 break;
         }
     }
@@ -178,7 +135,6 @@ public class UserProfile extends AppCompatActivity implements View.OnClickListen
                                 }
                             }
                             info = jsonObject;
-                            Log.v("Response", info.toString());
                             username.setText(getString(R.string.name, jsonObject.getString("name")));
                             phone.setText(getString(R.string.phone_number, jsonObject.getString("phone")));
                             email.setText(getString(R.string.email, jsonObject.getString("mail")));

@@ -33,8 +33,27 @@ public class EditPage extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         binding = InfoEditBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
-        binding.textView.setText(getIntent().getStringExtra("data"));
         int purpose = getIntent().getIntExtra("Purpose", 0);
+        try {
+            JSONObject info = new JSONObject(getIntent().getStringExtra("Info"));
+            switch (purpose) {
+                case 0:
+                    binding.textView.setText(info.getString("name"));
+                    break;
+                case 1:
+                    binding.textView.setText(info.getString("phone"));
+                    break;
+                case 2:
+                    binding.textView.setText(info.getString("mail"));
+                    break;
+                case 3:
+                    binding.textView.setText(info.getString("wage"));
+                    break;
+            }
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
         binding.button2.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -45,7 +64,9 @@ public class EditPage extends AppCompatActivity {
                     mapBody.put("phone", jsonObject.getString("phone"));
                     mapBody.put("mail", jsonObject.getString("mail"));
                     mapBody.put("manager", jsonObject.getString("manager"));
-                    mapBody.put("enable", jsonObject.getString("true"));
+                    mapBody.put("sex", jsonObject.getString("sex"));
+                    mapBody.put("birthday", jsonObject.getString("birthday"));
+                    mapBody.put("enable", "true");
                     switch (purpose) {
                         case 0:
                             mapBody.put("name", binding.textView.getText().toString());
@@ -75,16 +96,17 @@ public class EditPage extends AppCompatActivity {
     @SuppressLint("SetTextI18n")
     public void sendInfo(HashMap<String, String> body) {
         body.put("account", getIntent().getExtras().getString("company_number"));
+        Log.v("EditPage", body.toString() );
         VolleyDataRequester.withSelfCertifiedHttps(getApplicationContext())
                 .setUrl(HOST)
                 .setBody(body)
                 .setMethod(VolleyDataRequester.Method.POST )
                 .setJsonResponseListener(response -> {
                     try {
+                        Log.v("Response", response.toString());
                         if (!response.getBoolean("status")) {
                             Toast.makeText(this, R.string.error_connecting, Toast.LENGTH_LONG).show();
                         } else {
-                            Log.v("Response", response.toString());
                             finish();
                         }
                     } catch (JSONException e) {

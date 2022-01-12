@@ -135,7 +135,7 @@ public class FaceClockIn extends AppCompatActivity implements NavigationView.OnN
                         imageCapture.takePicture(captureExecutor, new ImageCapture.OnImageCapturedCallback() {
                             @Override
                             public void onCaptureSuccess(@NonNull ImageProxy image) {
-                                if (livenessAnalyzer.getLiveness() || true) {
+                                if (true) {
                                     cropFace(image);
                                 } else {
                                     // TODO: Make into alert dialog?

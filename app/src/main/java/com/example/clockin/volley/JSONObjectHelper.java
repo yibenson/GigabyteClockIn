@@ -46,6 +46,14 @@ public class JSONObjectHelper {
                 e.printStackTrace();
             }
         }
+        if (mapBody.containsKey("enable")) {
+            boolean enable = Boolean.parseBoolean(mapBody.get("enable"));
+            try {
+                jsonObject.put("enable", enable);
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+        }
         if (mapBody.containsKey("wage")) {
             int wage = Integer.parseInt(mapBody.get("wage"));
             try {
