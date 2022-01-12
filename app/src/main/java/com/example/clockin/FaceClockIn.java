@@ -23,6 +23,7 @@ import android.view.View;
 import androidx.camera.core.CameraSelector;
 import androidx.camera.core.ImageAnalysis;
 import androidx.camera.core.ImageCapture;
+import androidx.camera.core.ImageCaptureException;
 import androidx.camera.core.ImageProxy;
 import androidx.camera.core.Preview;
 import androidx.camera.lifecycle.ProcessCameraProvider;
@@ -139,6 +140,11 @@ public class FaceClockIn extends AppCompatActivity implements NavigationView.OnN
                                 cropFace(image);
                                 image.close();
                             }
+
+                            @Override
+                            public void onError(@NonNull ImageCaptureException exception) {
+                                super.onError(exception);
+                            }
                         }));
                 cameraProvider.bindToLifecycle(this, cameraSelector, imageCapture, preview);
             } catch (ExecutionException | InterruptedException e) {
@@ -150,8 +156,11 @@ public class FaceClockIn extends AppCompatActivity implements NavigationView.OnN
     private void cropFace(ImageProxy image) {
         Log.v("Response", "Attempting to identify image");
         this.bitmap = FileUtils.toBitmap(image);
+        Log.v("Response", "ImageProxy to bitmap no error");
         InputImage inputImage = InputImage.fromBitmap(bitmap, rotation);
+        Log.v("Response", "inputImage from bitmap no error");
         faceDetector = FaceDetection.getClient();
+        Log.v("Response", "facedetection client grab no error");
         faceDetector.process(inputImage).addOnSuccessListener(faces -> {
             Log.v("Response", "Processing faces");
             if (!faces.isEmpty()) {
