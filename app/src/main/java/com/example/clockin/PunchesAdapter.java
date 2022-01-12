@@ -5,37 +5,39 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 
+import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
+
+import com.example.clockin.databinding.PunchRowBinding;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 public class PunchesAdapter extends RecyclerView.Adapter<PunchesAdapter.ViewHolder> {
-
     private JSONArray mData;
     private LayoutInflater mInflater;
     private ItemClickListener mClickListener;
+
+    private final int VIEW_TYPE_PUNCH = 0;
+    private final int VIEW_TYPE_LOADING = 1;
 
     // data is passed into the constructor
     PunchesAdapter(Context context, JSONArray data) {
         this.mInflater = LayoutInflater.from(context);
         if (data.length() == 0) {
-            JSONArray nullArray = new JSONArray();
-            try {
-                nullArray.put(0, "No data detected");
-                nullArray.put(1, "No data detected");
-                nullArray.put(2, "No data detected");
-                data.put(0, nullArray);
-            } catch (JSONException e) {
-                e.printStackTrace();
-            }
+            mData = new JSONArray();
+        } else {
+            this.mData = data;
         }
-        this.mData = data;
         Log.v("Punches", mData.toString());
     }
 
@@ -49,37 +51,51 @@ public class PunchesAdapter extends RecyclerView.Adapter<PunchesAdapter.ViewHold
     // binds the data to the TextView in each row
     @Override
     public void onBindViewHolder(ViewHolder holder, int position) {
-        JSONArray punch = null;
         try {
-            punch = (JSONArray) mData.get(position);
-        } catch (JSONException e) {
+            JSONArray punch = (JSONArray) mData.get(position);
+            SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
+            SimpleDateFormat date = new SimpleDateFormat("yyyy/MM/dd");
+            SimpleDateFormat hour = new SimpleDateFormat("HH:mm");
+            Date clockin = simpleDateFormat.parse(punch.getString(0));
+            Date clockout = simpleDateFormat.parse(punch.getString(1));
+            String total = punch.getString(2);
+
+            holder.inDate.setText(date.format(clockin));
+            holder.inTime.setText(hour.format(clockin));
+            holder.outDate.setText(date.format(clockout));
+            holder.outTime.setText(hour.format(clockout));
+            holder.totalTime.setText(total);
+        } catch (ParseException | JSONException e) {
             e.printStackTrace();
         }
-        StringBuilder stringBuilder = new StringBuilder();
-        try {
-            stringBuilder.append("上班： ").append(punch.get(0)).append(" || ")
-                    .append("下班： ").append(punch.get(1)).append(" || ")
-                    .append("Hours worked: ").append(punch.get(2));
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-        holder.myTextView.setText(stringBuilder);
     }
 
     // total number of rows
     @Override
     public int getItemCount() {
-        return mData.length();
+        return mData == null ? 0 : mData.length();
+    }
+
+    public void updateData(JSONArray data) {
+        this.mData = data;
     }
 
 
     // stores and recycles views as they are scrolled off screen
     public class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
-        TextView myTextView;
+        public TextView inDate;
+        public TextView inTime;
+        public TextView outDate;
+        public TextView outTime;
+        public TextView totalTime;
 
         ViewHolder(View itemView) {
             super(itemView);
-            myTextView = itemView.findViewById(R.id.tvAnimalName);
+            inDate = itemView.findViewById(R.id.in_date);
+            inTime = itemView.findViewById(R.id.in_time);
+            outDate = itemView.findViewById(R.id.out_date);
+            outTime = itemView.findViewById(R.id.out_time);
+            totalTime = itemView.findViewById(R.id.total_time);
             itemView.setOnClickListener(this);
         }
 
@@ -88,6 +104,7 @@ public class PunchesAdapter extends RecyclerView.Adapter<PunchesAdapter.ViewHold
             if (mClickListener != null) mClickListener.onItemClick(view, getAdapterPosition());
         }
     }
+
 /**
     // convenience method for getting data at click position
     String getItem(int id) {

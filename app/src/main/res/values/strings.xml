@@ -1,24 +1,21 @@
 <resources>
     <string name="app_name">ClockIn</string>
-    <string name="login">Login</string>
-
-    <string name="confirm_password">Confirm Password</string>
-    <string name="register">Register</string>
-    <string name="registration_form">報名表格</string>
-    <string name="add_photo">Add Photo</string>
 
     // login
     <string name="title">GClockIn</string>
-    <string name="company_username">欲註冊帳號</string>
-    <string name="company_password">欲設定帳號密碼</string>
+    <string name="company_username">公司帳號</string>
+    <string name="company_password">公司密碼</string>
+    <string name="login">登錄</string>
 
-    // Chinese registration form
-    // company username
-    // company password
-    // company password confirm
-    <string name="company_name">公司名稱</string>
-    <string name="email">員工電子郵件</string>
-    <string name="name">員工姓名</string>
+    // Company registration form
+    <string name="registration_form">報名表格</string>
+    <string name="set_company_username">欲設定公司帳號</string>
+    <string name="set_company_password">欲設定公司密碼</string>
+    <string name="confirm_password">確認密碼</string>
+    <string name="set_company_name">欲設定公司名稱</string>
+    <string name="set_company_email">欲設定公司電子郵件</string>
+    <string name="registration_success">註冊成功</string>
+    <string name="register">註冊</string>
 
     // User registration form
     <string name="user_registration">員工註冊</string>
@@ -35,13 +32,26 @@
     // mail
     <string name="manager">是否為管理職</string>
     <string name="wage">時薪</string>
+    <string name="add_photo">添加照片</string>
 
-    // clockinorconfig
+    // clockin
     <string name="clockin">員工打卡</string>
+    <string name="clocked_in_for">"你工作的總時間是：%1$s"</string>
     <string name="options">管理</string>
-    <string name="error">"An error occurred when connecting to the server"</string>
-    <string name="clocked_out">"You're not currently clocked in"</string>
-    <string name="clocked_in">"You're not currently clocked in"</string>
+    <string name="clocked_out">"您已成功下班"</string>
+    <string name="clocked_in">"您已成功打卡"</string>
+    <string name="clockin_success">您的打卡已被錄製</string>
+    <string name="already_clocked_in">"你目前還沒打卡"</string>
+    <string name="not_currently_clocked_in">"你已經上班了"</string>
+    <string name="clockin_confirm">請確認打卡</string>
+    <string name="yes">是的</string>
+    <string name="cancel">取消</string>
+
+    // punches
+    <string name="in">上班</string>
+    <string name="out">下班</string>
+    <string name="time">總時間</string>
+    <string name="date_window">時間段: %1$s - %2$s</string>
 
     // welcome
     <string name="morning">早安, %1$s</string>
@@ -49,6 +59,17 @@
     <string name="evening">晚安您好, %1$s</string>
     <string name="afternoon">午安您好, %1$s</string>
     <string name="timer_format">00:00:00</string>
+
+    // error messages
+    <string name="company_user_empty">請輸入公司帳號</string>
+    <string name="password_empty">密碼不能為空</string>
+    <string name="company_name_empty">請輸入公司名稱</string>
+    <string name="company_email_empty">請輸入公司電子郵件</string>
+    <string name="password_no_match">密碼不匹配</string>
+    <string name="duplicate_account">檢測到重複帳戶</string>
+    <string name="invalid_account">無效的公司名稱</string>
+    <string name="company_login_failed">公司名稱或密碼錯誤</string>
+    <string name="error_connecting">"連接時發生錯誤"</string>
 
 
 </resources>

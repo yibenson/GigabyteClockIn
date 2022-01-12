@@ -18,6 +18,7 @@ import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.constraintlayout.widget.ConstraintLayout;
 
+import com.example.clockin.databinding.UserRegistrationWindowBinding;
 import com.example.clockin.volley.VolleyDataRequester;
 
 import java.util.ArrayList;
@@ -26,79 +27,48 @@ import java.util.HashMap;
 
 public class UserRegistrationWindow extends AppCompatActivity implements AdapterView.OnItemSelectedListener {
     String HOST = "https://52.139.218.209:443/user/user_reigster"; // typo courtesy of backend guy
-    Button add_photo_button;
-    Button register_button;
+    private UserRegistrationWindowBinding binding;
 
-    private EditText username;
-    private EditText phone;
-    private EditText mail;
-    private EditText wage;
-    private TextView birthday;
-    private DatePickerDialog picker;
-    private CheckBox manager;
-    private ArrayList<EditText> texts;
     private String photo;
     private String landmarks;
-    private String company_number;
-    private Spinner sexSpinner;
-    private Integer sex;
-    private String date;
+    private int sex; // 0 = male, 1 = female
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.user_registration_window);
-        ConstraintLayout rootLayout = findViewById(R.id.user_register_layout);
-        username = findViewById(R.id.user_username);
-        phone = findViewById(R.id.user_phone);
-        mail = findViewById(R.id.user_mail);
-        wage = findViewById(R.id.user_wage);
-        manager = findViewById(R.id.user_is_manager);
-        birthday = findViewById(R.id.user_birthday);
-        add_photo_button = findViewById(R.id.user_add_photo_button);
+        binding = UserRegistrationWindowBinding.inflate(getLayoutInflater());
+        setContentView(binding.getRoot());
         if (getIntent().hasExtra("photo")) {
-            add_photo_button.setText("Photo added!");
-        }
-        register_button = findViewById(R.id.user_register_button);
-
-        // add EditTexts to list
-        texts = new ArrayList<>();
-        for(int i = 0; i < rootLayout.getChildCount(); i++) {
-            if(rootLayout.getChildAt(i) instanceof EditText) {
-                texts.add( (EditText) rootLayout.getChildAt(i));
-            }
+            binding.addPhoto.setText("Photo added!");
         }
 
-        // set spinner
-        sexSpinner = findViewById(R.id.sex);
-        // Create an ArrayAdapter using the string array and a default spinner layout
+        // Creating sex spinner
         ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(this,
                 R.array.性別, android.R.layout.simple_spinner_item);
-        // Specify the layout to use when the list of choices appears
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        // Apply the adapter to the spinner
-        sexSpinner.setAdapter(adapter);
-        sexSpinner.setOnItemSelectedListener(this);
+        binding.sex.setAdapter(adapter);
+        binding.sex.setOnItemSelectedListener(this);
 
         // set onclick listeners
-        birthday.setOnClickListener(view -> openDateDialog());
-        add_photo_button.setOnClickListener(view -> openFaceClockIn());
-        register_button.setOnClickListener(view -> sendInfo());
+        binding.birthday.setOnClickListener(view -> openDateDialog());
+        binding.addPhoto.setOnClickListener(view -> openFaceClockIn());
+        binding.register.setOnClickListener(view -> sendInfo());
 
         // fill data if returning to window
         Intent data = getIntent();
-        company_number = data.getExtras().get("company_number").toString();
         if (data.hasExtra("photo")) {
-            username.setText(data.getExtras().get("username").toString());
-            phone.setText(data.getExtras().get("phone").toString());
-            mail.setText(data.getExtras().get("mail").toString());
-            wage.setText(data.getExtras().get("wage").toString());
-            manager.setChecked((boolean) data.getExtras().get("manager"));
-            photo = data.getExtras().get("photo").toString();
-            landmarks = (String) data.getExtras().get("landmark");
-            date = data.getExtras().get("birthday").toString();
-            birthday.setText(date);
-            sexSpinner.setSelection((Integer) data.getExtras().get("sex"));
+            binding.username.setText(data.getExtras().getString("username"));
+            binding.phone.setText(data.getExtras().getString("phone"));
+            binding.email.setText(data.getExtras().getString("mail"));
+            binding.wage.setText(data.getExtras().getString("wage"));
+            binding.manager.setChecked((boolean) data.getExtras().get("manager"));
+            binding.birthday.setText(data.getExtras().getString("birthday"));
+
+            // assign priv variables
+            sex = data.getExtras().getInt("sex");
+            binding.sex.setSelection(sex);
+            photo = data.getStringExtra("photo");
+            landmarks = data.getStringExtra("landmark");
         }
     }
 
@@ -107,16 +77,16 @@ public class UserRegistrationWindow extends AppCompatActivity implements Adapter
             return;
         }
         if ((photo == null) || landmarks == null) {
-            register_button.setError("Please add a photo");
+            binding.addPhoto.setError("Please add a photo");
             return;
         }
         HashMap<String, String> body = new HashMap<>();
-        body.put("account", company_number);
-        body.put("name", username.getText().toString());
-        body.put("phone", phone.getText().toString());
-        body.put("mail", mail.getText().toString());
-        body.put("wage", wage.getText().toString());
-        body.put("manager", Boolean.toString(manager.isChecked()));
+        body.put("account", getIntent().getStringExtra("company_number"));
+        body.put("name", binding.username.getText().toString());
+        body.put("phone", binding.phone.getText().toString());
+        body.put("mail", binding.email.getText().toString());
+        body.put("wage", binding.wage.getText().toString());
+        body.put("manager", Boolean.toString(binding.manager.isChecked()));
         body.put("landmark", landmarks);
         body.put("face", photo);
         if (sex == 0) {
@@ -124,17 +94,17 @@ public class UserRegistrationWindow extends AppCompatActivity implements Adapter
         } else {
             body.put("sex", "female");
         }
-        body.put("birthday", date);
+        body.put("birthday", binding.birthday.toString());
 
         VolleyDataRequester.withSelfCertifiedHttps(getApplicationContext())
                 .setUrl(HOST)
                 .setBody(body)
                 .setMethod( VolleyDataRequester.Method.POST )
                 .setJsonResponseListener(response -> {
-                    Log.v("Response", response.toString());
                     Toast.makeText(getApplicationContext(), response.toString(), Toast.LENGTH_LONG).show();
                 })
                 .requestJson();
+        // Success --> return to idle clock in
         Intent intent = new Intent(this, FaceClockIn.class);
         intent.putExtra("Purpose", "Identify");
         intent.putExtra("company_number", getIntent().getStringExtra("company_number"));
@@ -143,33 +113,33 @@ public class UserRegistrationWindow extends AppCompatActivity implements Adapter
     }
 
     private boolean emptyForm() {
-        for (EditText e : texts) {
-            String text = e.getText().toString();
-            if (TextUtils.isEmpty(text)) {
-                e.setError("Item cannot be empty");
-                return true;
+        for (int i = 0; i < binding.getRoot().getChildCount(); i++) {
+            View v = binding.getRoot().getChildAt(i);
+            if (v instanceof EditText) {
+                String text = ((EditText) v).getText().toString();
+                if (TextUtils.isEmpty(text)) {
+                    ((EditText) v).setError("Item cannot be empty");
+                    return true;
+                }
             }
         }
-        if ((sex==null) || birthday.getText().toString().equals("")) {
+        if (binding.birthday.getText().toString().equals("")) {
             return true;
         }
         return false;
     }
 
     public void openFaceClockIn() {
-        if (emptyForm()) {
-            return;
-        }
+        if (emptyForm()) { return; }
         Intent intent = new Intent(this, FaceClockIn.class);
         intent.putExtra("Purpose", "Register");
-        intent.putExtra("company_number", company_number);
-        intent.putExtra("username", username.getText().toString());
-        intent.putExtra("phone", phone.getText().toString());
-        intent.putExtra("mail", mail.getText().toString());
-        intent.putExtra("wage", wage.getText().toString());
-        intent.putExtra("manager", manager.isChecked());
-        intent.putExtra("birthday", date);
-        Log.v("Response", date);
+        intent.putExtra("company_number", getIntent().getStringExtra("company_number"));
+        intent.putExtra("username", binding.username.getText().toString());
+        intent.putExtra("phone", binding.phone.getText().toString());
+        intent.putExtra("mail", binding.email.getText().toString());
+        intent.putExtra("wage", binding.wage.getText().toString());
+        intent.putExtra("manager", binding.manager.isChecked());
+        intent.putExtra("birthday", binding.birthday.getText().toString());
         intent.putExtra("sex", sex);
         startActivity(intent);
     }
@@ -180,10 +150,10 @@ public class UserRegistrationWindow extends AppCompatActivity implements Adapter
         int month = cldr.get(Calendar.MONTH);
         int year = cldr.get(Calendar.YEAR);
         // date picker dialog
-        picker = new DatePickerDialog(UserRegistrationWindow.this,
+        DatePickerDialog picker = new DatePickerDialog(UserRegistrationWindow.this,
                 (datePicker, i, i1, i2) -> {
-                    date = i + "." + i1 + "." + i2;
-                    birthday.setText(date);
+                    String date = i + "." + i1 + "." + i2;
+                    binding.birthday.setText(date);
                 }, year, month, day);
         picker.show();
     }

@@ -8,7 +8,7 @@
     tools:context=".CompanyRegistrationWindow">
 
     <TextView
-        android:id="@+id/user_registration"
+        android:id="@+id/banner"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="48dp"
@@ -20,7 +20,7 @@
         app:layout_constraintTop_toTopOf="parent" />
 
     <EditText
-        android:id="@+id/user_username"
+        android:id="@+id/username"
         style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
         android:layout_width="300dp"
         android:layout_height="50dp"
@@ -28,11 +28,11 @@
         android:hint="@string/user_username"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/user_registration"
+        app:layout_constraintTop_toBottomOf="@+id/banner"
         android:inputType="textPersonName" />
 
     <EditText
-        android:id="@+id/user_phone"
+        android:id="@+id/phone"
         style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
         android:layout_width="300dp"
         android:layout_height="50dp"
@@ -40,24 +40,24 @@
         android:hint="@string/phone_number"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/user_username"
+        app:layout_constraintTop_toBottomOf="@+id/username"
         android:inputType="phone" />
 
 
     <EditText
-        android:id="@+id/user_mail"
+        android:id="@+id/email"
         style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
         android:layout_width="300dp"
         android:layout_height="50dp"
         android:layout_marginTop="16dp"
-        android:hint="@string/email"
+        android:hint="@string/set_company_email"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/user_phone"
+        app:layout_constraintTop_toBottomOf="@+id/phone"
         android:inputType="textEmailAddress"/>
 
     <EditText
-        android:id="@+id/user_wage"
+        android:id="@+id/wage"
         style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
         android:layout_width="300dp"
         android:layout_height="50dp"
@@ -65,11 +65,11 @@
         android:hint="@string/wage"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/user_mail"
+        app:layout_constraintTop_toBottomOf="@+id/email"
         android:inputType="number"/>
 
     <TextView
-        android:id="@+id/user_birthday"
+        android:id="@+id/birthday"
         style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
         android:layout_width="300dp"
         android:layout_height="50dp"
@@ -78,7 +78,7 @@
         android:timePickerMode="spinner"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/user_wage" />
+        app:layout_constraintTop_toBottomOf="@+id/wage" />
 
     <Spinner
         android:id="@+id/sex"
@@ -88,11 +88,11 @@
         android:layout_marginTop="16dp"
         android:hint="@string/sex"
         android:prompt="@string/sex"
-        app:layout_constraintStart_toStartOf="@id/user_birthday"
-        app:layout_constraintTop_toBottomOf="@+id/user_birthday" />
+        app:layout_constraintStart_toStartOf="@id/birthday"
+        app:layout_constraintTop_toBottomOf="@+id/birthday" />
 
     <CheckBox
-        android:id="@+id/user_is_manager"
+        android:id="@+id/manager"
         style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
         android:layout_width="300dp"
         android:layout_height="50dp"
@@ -104,7 +104,7 @@
 
 
     <Button
-        android:id="@+id/user_add_photo_button"
+        android:id="@+id/add_photo"
         android:layout_width="166dp"
         android:layout_height="48dp"
         android:layout_marginTop="16dp"
@@ -113,11 +113,11 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.497"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/user_is_manager"
+        app:layout_constraintTop_toBottomOf="@+id/manager"
         app:layout_constraintVertical_bias="0.035" />
 
     <Button
-        android:id="@+id/user_register_button"
+        android:id="@+id/register"
         android:layout_width="166dp"
         android:layout_height="48dp"
         android:layout_marginTop="20dp"
@@ -126,7 +126,7 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.497"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/user_add_photo_button"
+        app:layout_constraintTop_toBottomOf="@+id/add_photo"
         app:layout_constraintVertical_bias="0.0" />
 
 

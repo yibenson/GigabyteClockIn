@@ -2,31 +2,21 @@ package com.example.clockin;
 
 import android.Manifest;
 import android.annotation.SuppressLint;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
-import android.content.res.Resources;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.graphics.PointF;
 import android.graphics.Rect;
-import android.media.Image;
 import android.os.Bundle;
 
+import com.example.clockin.databinding.FaceClockinBinding;
 import com.example.clockin.volley.VolleyDataRequester;
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.OnSuccessListener;
-import com.google.android.gms.tasks.Task;
 import com.google.android.material.navigation.NavigationView;
-import com.google.android.material.snackbar.Snackbar;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBarDrawerToggle;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
-import android.renderscript.ScriptGroup;
-import android.util.Log;
 import android.view.View;
 
 import androidx.camera.core.CameraSelector;
@@ -41,7 +31,7 @@ import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
-import androidx.lifecycle.LifecycleOwner;
+
 import com.google.common.util.concurrent.ListenableFuture;
 import com.google.mlkit.vision.common.InputImage;
 import com.google.mlkit.vision.face.Face;
@@ -50,7 +40,6 @@ import com.google.mlkit.vision.face.FaceDetector;
 import com.google.mlkit.vision.face.FaceDetectorOptions;
 import com.google.mlkit.vision.face.FaceLandmark;
 
-import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.Button;
 import android.widget.ImageView;
@@ -60,15 +49,9 @@ import android.widget.Toast;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.io.File;
-import java.io.IOException;
-import java.nio.ByteBuffer;
 import java.util.Arrays;
 import java.util.HashMap;
-import java.util.List;
-import java.util.Objects;
 import java.util.concurrent.ExecutionException;
-import java.util.concurrent.Executor;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -86,44 +69,26 @@ public class FaceClockIn extends AppCompatActivity implements NavigationView.OnN
     private FaceDetector faceDetector;
     private int rotation;
 
-    // nav drawer
+    // layout variables
+    private FaceClockinBinding binding;
     public DrawerLayout drawerLayout;
     public ActionBarDrawerToggle actionBarDrawerToggle;
-    public NavigationView navigationView;
 
-    // intent we pass back to user registration window
-    private Intent user_intent;
-    private String purpose;
-
+    // bitmap = photo we take
     private Bitmap bitmap;
-    private CardView cameraWrapper;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.faceclockin);
-        Intent intent = getIntent();
-        cameraWrapper = findViewById(R.id.clockIncameraWrapper);
+        binding = FaceClockinBinding.inflate(getLayoutInflater());
+        setContentView(binding.getRoot());
         // only display nav drawer when we're using this for identification
-        if (intent.getExtras().get("Purpose").equals("Identify")) {
-            purpose = "Identify";
-            drawerLayout = findViewById(R.id.my_drawer_layout);
-            actionBarDrawerToggle = new ActionBarDrawerToggle(this, drawerLayout, R.string.nav_open, R.string.nav_close);
-            drawerLayout.addDrawerListener(actionBarDrawerToggle);
+        if (getIntent().getStringExtra("Purpose").equals("Identify")) {
+            actionBarDrawerToggle = new ActionBarDrawerToggle(this, binding.myDrawerLayout, R.string.nav_open, R.string.nav_close);
+            binding.myDrawerLayout.addDrawerListener(actionBarDrawerToggle);
             actionBarDrawerToggle.syncState();
             getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-            navigationView = findViewById(R.id.base_navigation_view);
-            navigationView.setNavigationItemSelectedListener(this);
-
-            // set user_intent parameters
-            user_intent = new Intent(this, Homepage.class);
-            user_intent.putExtra("company_number", intent.getExtras().getString("company_number"));
-            user_intent.putExtra("Purpose", "Identify");
-        } else if (intent.getExtras().get("Purpose").equals("Register")) {
-            purpose = "Register";
-            user_intent = new Intent(this, UserRegistrationWindow.class);
-            user_intent.putExtras(intent.getExtras());
-            user_intent.putExtra("Purpose", "Register");
+            binding.baseNavigationView.setNavigationItemSelectedListener(this);
         }
         if (!hasPermissions()) {
             // request camera permissions
@@ -157,18 +122,18 @@ public class FaceClockIn extends AppCompatActivity implements NavigationView.OnN
                 imageAnalysis.setAnalyzer(analysisExecutor, livenessAnalyzer);
 
                 // bind image capture
-                ImageCapture imageCapture =
-                        new ImageCapture.Builder()
-                                .setTargetRotation(rotation).build();
-                Button captureButton = findViewById(R.id.shutter);
+                rotation = this.getWindowManager().getDefaultDisplay().getRotation();
+                ImageCapture imageCapture = new ImageCapture.Builder()
+                        .setTargetRotation(rotation).build();
                 captureExecutor = Executors.newSingleThreadExecutor();
-                captureButton.setOnClickListener(v ->
+                binding.shutter.setOnClickListener(v ->
                         imageCapture.takePicture(captureExecutor, new ImageCapture.OnImageCapturedCallback() {
                             @Override
                             public void onCaptureSuccess(@NonNull ImageProxy image) {
                                 if (livenessAnalyzer.getLiveness()) {
                                     cropFace(image);
                                 } else {
+                                    // TODO: Make into alert dialog?
                                     runOnUiThread(() -> Toast.makeText(getApplicationContext(), "Please blink to ensure live image", Toast.LENGTH_LONG).show());
                                 }
                                 image.close();
@@ -187,8 +152,7 @@ public class FaceClockIn extends AppCompatActivity implements NavigationView.OnN
         faceDetector = FaceDetection.getClient();
         faceDetector.process(inputImage).addOnSuccessListener(faces -> {
             if (!faces.isEmpty()) {
-                Face face = faces.get(0);
-                Rect rect = face.getBoundingBox();
+                Rect rect = faces.get(0).getBoundingBox();
                 try {
                     Bitmap croppedBmp = Bitmap.createBitmap(bitmap, rect.left, rect.top, rect.width(), rect.height());
                     Bitmap compressedBitmap = Bitmap.createScaledBitmap(croppedBmp, 150, 150, false);
@@ -198,6 +162,7 @@ public class FaceClockIn extends AppCompatActivity implements NavigationView.OnN
                     e.printStackTrace();
                 }
             } else {
+                // Something other than toasts because toasts are fucking garbage
                 Toast.makeText(getApplicationContext(), "No live faces detected", Toast.LENGTH_LONG).show();
             }
         });
@@ -225,33 +190,34 @@ public class FaceClockIn extends AppCompatActivity implements NavigationView.OnN
                 }
             }
         }).addOnCompleteListener(task -> {
-            if (purpose.equals("Register")) {
-                user_intent.putExtra("landmark", Arrays.toString(arr));
-                user_intent.putExtra("photo", base64);
-                startActivity(user_intent);
-                finish();
+            if (getIntent().getStringExtra("Purpose").equals("Register")) {
+                Intent intent = new Intent(getApplicationContext(), UserRegistrationWindow.class);
+                intent.putExtras(getIntent().getExtras());
+                intent.putExtra("landmark", Arrays.toString(arr));
+                intent.putExtra("photo", base64);
+                startActivity(intent);
             } else {
-                String company_number = user_intent.getExtras().getString("company_number");
                 HashMap<String, String> body = new HashMap<>();
-                body.put("account", company_number);
-                body.put("landmark", Arrays.toString(arr));
+                body.put("account", getIntent().getStringExtra("company_number"));
                 body.put("cropimage", base64);
+                body.put("landmark", Arrays.toString(arr));
                 VolleyDataRequester.withSelfCertifiedHttps(getApplicationContext())
                         .setUrl(HOST+"identify/identify")
                         .setBody(body)
-                        .setMethod( VolleyDataRequester.Method.POST )
+                        .setMethod(VolleyDataRequester.Method.POST)
                         .setJsonResponseListener(response -> {
                             try {
                                 if (response.get("status").toString().equals("false")) {
                                     Toast.makeText(getApplicationContext(), "Identification unsuccessful. Try again", Toast.LENGTH_LONG).show();
                                 } else {
+                                    Intent intent = new Intent(getApplicationContext(), Homepage.class);
                                     JSONObject jsonObject = response.getJSONObject("result");
-                                    String username = jsonObject.getString("username");
-                                    user_intent.putExtra("username", username);
-                                    user_intent.putExtra("manager", jsonObject.getBoolean("manager"));
-                                    user_intent.putExtra("user_object_id", jsonObject.getString("user_object_id"));
-                                    user_intent.putExtra("record_object_id", jsonObject.getString("record_object_id"));
-                                    showAlertDialog(username);
+                                    intent.putExtra("company_number", getIntent().getStringExtra("company_number"));
+                                    intent.putExtra("username", jsonObject.getString("username"));
+                                    intent.putExtra("manager", jsonObject.getBoolean("manager"));
+                                    intent.putExtra("user_object_id", jsonObject.getString("user_object_id"));
+                                    intent.putExtra("record_object_id", jsonObject.getString("record_object_id"));
+                                    showAlertDialog(jsonObject.getString("username"), intent);
                                 }
                             } catch (JSONException e) {
                                 e.printStackTrace();
@@ -259,11 +225,10 @@ public class FaceClockIn extends AppCompatActivity implements NavigationView.OnN
                         })
                         .requestJson();
             }
-
         });
     }
 
-    private void showAlertDialog(String username) {
+    private void showAlertDialog(String username, Intent intent) {
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         final View customLayout = getLayoutInflater().inflate(R.layout.confirm_dialog, null);
         builder.setView(customLayout);
@@ -273,12 +238,11 @@ public class FaceClockIn extends AppCompatActivity implements NavigationView.OnN
         imageView.setImageBitmap(bitmap);
         // add a button
         builder.setPositiveButton("Login", (dialog, which) -> {
-            startActivity(user_intent);
+            startActivity(intent);
         });
         builder.setNegativeButton("Not you?", (dialog, which) -> {
             dialog.dismiss();
         });
-        // create and show the alert dialog
         AlertDialog dialog = builder.create();
         dialog.show();
     }
@@ -290,6 +254,7 @@ public class FaceClockIn extends AppCompatActivity implements NavigationView.OnN
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
         if (requestCode == REQUEST_CODE_CAMERA_PERMISSION) {
             if (grantResults[0] == PackageManager.PERMISSION_DENIED) {
+                // todo: maybe move to alert dialog
                 Toast.makeText(this,
                         "Please enable all permissions to use this app",
                         Toast.LENGTH_LONG)
@@ -325,12 +290,13 @@ public class FaceClockIn extends AppCompatActivity implements NavigationView.OnN
     public boolean onNavigationItemSelected(@NonNull MenuItem item) {
         switch (item.getItemId()) {
             case R.id.add_account:
-                Intent temp = new Intent(this, UserRegistrationWindow.class);
-                temp.putExtras(user_intent.getExtras());
-                startActivity(new Intent(temp));
+                Intent intent = new Intent(this, UserRegistrationWindow.class);
+                intent.putExtra("company_number", getIntent().getStringExtra("company_number"));
+                startActivity(intent);
             case R.id.base_settings:
-                // todo
+                // todo: should contain language swap / maybe theme?
             case R.id.base_logout:
+                startActivity(new Intent(this, MainActivity.class));
                 finish();
         }
         drawerLayout.closeDrawer(GravityCompat.START);

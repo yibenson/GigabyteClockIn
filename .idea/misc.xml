@@ -3,21 +3,25 @@
   <component name="DesignSurface">
     <option name="filePathToZoomLevelMap">
       <map>
+        <entry key="app/src/main/res/drawable-v24/ic_launcher_foreground.xml" value="0.25364583333333335" />
         <entry key="app/src/main/res/drawable-v24/ring.xml" value="0.2677083333333333" />
         <entry key="app/src/main/res/drawable/green_ring.xml" value="0.2677083333333333" />
+        <entry key="app/src/main/res/drawable/ic_launcher_background.xml" value="0.25364583333333335" />
         <entry key="app/src/main/res/drawable/input_box.xml" value="0.2677083333333333" />
+        <entry key="app/src/main/res/drawable/punch_border.xml" value="0.2484375" />
         <entry key="app/src/main/res/layout/activity_main.xml" value="0.25" />
         <entry key="app/src/main/res/layout/activity_registration_window.xml" value="0.335" />
         <entry key="app/src/main/res/layout/clockinorconfig.xml" value="0.165" />
-        <entry key="app/src/main/res/layout/company_registration_window.xml" value="0.2515625" />
+        <entry key="app/src/main/res/layout/company_registration_window.xml" value="0.5" />
         <entry key="app/src/main/res/layout/configmenu.xml" value="0.2515625" />
         <entry key="app/src/main/res/layout/confirm_dialog.xml" value="0.26666666666666666" />
         <entry key="app/src/main/res/layout/confirm_photo.xml" value="0.2515625" />
         <entry key="app/src/main/res/layout/employees.xml" value="0.26666666666666666" />
         <entry key="app/src/main/res/layout/faceclockin.xml" value="0.2515625" />
         <entry key="app/src/main/res/layout/homepage.xml" value="0.375" />
-        <entry key="app/src/main/res/layout/punch_row.xml" value="0.2515625" />
-        <entry key="app/src/main/res/layout/punches.xml" value="0.12916666666666668" />
+        <entry key="app/src/main/res/layout/punch_loading.xml" value="0.23229166666666667" />
+        <entry key="app/src/main/res/layout/punch_row.xml" value="0.5" />
+        <entry key="app/src/main/res/layout/punches.xml" value="0.33" />
         <entry key="app/src/main/res/layout/user_registration_window.xml" value="0.335" />
         <entry key="app/src/main/res/layout/user_row.xml" value="0.335" />
         <entry key="app/src/main/res/layout/userprofile.xml" value="0.335" />

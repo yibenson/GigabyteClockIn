@@ -125,7 +125,7 @@ public class UserProfile extends AppCompatActivity {
                 .setJsonResponseListener(response -> {
                     try {
                         if (!response.getBoolean("status")) {
-                            Toast.makeText(this, R.string.error, Toast.LENGTH_LONG).show();
+                            Toast.makeText(this, R.string.error_connecting, Toast.LENGTH_LONG).show();
                         } else {
                             JSONObject jsonObject = new JSONObject();
                             JSONArray jsonArray = response.getJSONArray("result");

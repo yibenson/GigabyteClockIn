@@ -1,5 +1,6 @@
 package com.example.clockin;
 
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
@@ -17,6 +18,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
+import com.example.clockin.databinding.ActivityMainBinding;
 import com.example.clockin.volley.VolleyDataRequester;
 import com.example.clockin.volley.VolleyHelperApplication;
 
@@ -27,47 +29,90 @@ import java.util.HashMap;
 
 public class MainActivity extends AppCompatActivity {
     private String host = "https://52.139.218.209:443/login/login";
-    public static final String POST = "/post";
-    private EditText email;
-    private EditText password;
-    Context context;
+    private ActivityMainBinding binding;
 
     private static final String[] PERMISSIONS = {Manifest.permission.CAMERA, Manifest.permission.WRITE_EXTERNAL_STORAGE};
     private static final int REQUEST_CODE_CAMERA_PERMISSION = 200;
 
-    private View.OnClickListener loginClickListener = view -> {
-        try {
-            loginButtonClicked();
-        } catch (MalformedURLException e) {
-            e.printStackTrace();
-        }
-    };
-
-    private View.OnClickListener registrationClickListener = view -> registrationButtonClicked();
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
-        email = findViewById(R.id.email);
-        password = findViewById(R.id.password);
+        binding = ActivityMainBinding.inflate(getLayoutInflater());
+        setContentView(binding.getRoot());
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            email.setAutofillHints(View.AUTOFILL_HINT_EMAIL_ADDRESS);
-            password.setAutofillHints(View.AUTOFILL_HINT_PASSWORD);
+            binding.email.setAutofillHints(View.AUTOFILL_HINT_EMAIL_ADDRESS);
+            binding.password.setAutofillHints(View.AUTOFILL_HINT_PASSWORD);
         }
-        context = VolleyHelperApplication.getInstance();
 
-        // attach click listeners
-        Button loginButton = findViewById(R.id.login);
-        Button registrationButton = findViewById(R.id.register);
-        loginButton.setOnClickListener(loginClickListener);
-        registrationButton.setOnClickListener(registrationClickListener);
+        binding.login.setOnClickListener(view -> {
+            try {
+                loginButtonClicked();
+            } catch (MalformedURLException e) {
+                e.printStackTrace();
+            }
+        });
+        binding.register.setOnClickListener(view -> registrationButtonClicked());
 
         if (!hasPermissions()) {
-            // request camera permissions
             ActivityCompat.requestPermissions(this, PERMISSIONS, REQUEST_CODE_CAMERA_PERMISSION);
         }
     }
+
+    private void loginButtonClicked() throws MalformedURLException {
+        if (isEmpty(binding.email)) {
+            binding.email.setError(getString(R.string.company_user_empty));
+        } else if (isEmpty(binding.password)) {
+            binding.password.setError(getString(R.string.password_empty));
+        } else {
+            HashMap<String, String> body = new HashMap<>();
+            body.put("password", binding.password.getText().toString());
+            body.put("account", binding.email.getText().toString());
+            VolleyDataRequester.withSelfCertifiedHttps(getApplicationContext())
+                    .setUrl( host)
+                    .setBody( body )
+                    .setMethod( VolleyDataRequester.Method.POST )
+                    .setJsonResponseListener(response -> {
+                        try {
+                            if (response.getBoolean("status")) {
+                                Intent intent = new Intent(getApplicationContext(), FaceClockIn.class);
+                                intent.putExtra("Purpose", "Identify");
+                                intent.putExtra("company_number", binding.email.getText().toString());
+                                startActivity(intent);
+                            } else {
+                                // user/pw invalid
+                                showAlertDialog("login_error");
+                            }
+                        } catch (JSONException e) {
+                            // error connecting to server
+                            showAlertDialog("error");
+                        }
+                    })
+                    .requestJson();
+
+        }
+    }
+
+    private void registrationButtonClicked() {
+        Intent intent = new Intent(this, CompanyRegistrationWindow.class);
+        startActivity(intent);
+    }
+
+    private boolean isEmpty(EditText editText) {
+        return TextUtils.isEmpty(editText.getText().toString());
+    }
+
+    private void showAlertDialog(String status) {
+        AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
+        if (status.equals("login_error")) {
+            builder.setMessage(getString(R.string.company_login_failed))
+                    .setPositiveButton("Ok", null);
+        } else {
+            builder.setMessage(getString(R.string.error_connecting))
+                    .setPositiveButton("Ok", null);
+        }
+        builder.create().show();
+    }
+
 
     private boolean hasPermissions() {
         for (String s: PERMISSIONS) {
@@ -79,53 +124,4 @@ public class MainActivity extends AppCompatActivity {
         return true;
     }
 
-    private boolean isEmpty(EditText editText) {
-        CharSequence txt = editText.getText().toString();
-        return TextUtils.isEmpty(txt);
-    }
-
-    private void loginButtonClicked() throws MalformedURLException {
-        if (isEmpty(email)) {
-            email.setError("Please enter your email");
-        } else if (isEmpty(password)) {
-            password.setError("Please enter your password");
-        } else {
-            HashMap<String, String> body = new HashMap<>();
-            body.put("password", password.getText().toString());
-            body.put("account", email.getText().toString());
-            Log.v("Response", body.toString());
-
-
-            VolleyDataRequester.withSelfCertifiedHttps(getApplicationContext())
-                    .setUrl( host)
-                    .setBody( body )
-                    .setMethod( VolleyDataRequester.Method.POST )
-                    .setJsonResponseListener(response -> {
-                        Log.v("Response", response.toString());
-                        try {
-                            if (response.getBoolean("status")) {
-                                Toast.makeText(getApplicationContext(), "Login successful", Toast.LENGTH_LONG).show();
-                                Intent intent = new Intent(getApplicationContext(), FaceClockIn.class);
-                                intent.putExtra("Purpose", "Identify");
-                                intent.putExtra("company_number", email.getText().toString());
-                                startActivity(intent);
-                                finish();
-                            } else {
-                                Toast.makeText(getApplicationContext(), "Login unsuccessful", Toast.LENGTH_LONG).show();
-                            }
-                        } catch (JSONException e) {
-                            Toast.makeText(getApplicationContext(), "Error occurred", Toast.LENGTH_LONG).show();
-                        }
-                    })
-                    .requestJson();
-
-        }
-
-    }
-
-    private void registrationButtonClicked() {
-        Intent intent = new Intent(this, CompanyRegistrationWindow.class);
-        intent.putExtra("Purpose", "Identify");
-        startActivity(intent);
-    }
 }

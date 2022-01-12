@@ -37,9 +37,6 @@
             android:name=".FaceClockIn"
             android:exported="true" />
         <activity
-            android:name=".ConfigMenu"
-            android:exported="true" />
-        <activity
             android:name=".UserRegistrationWindow"
             android:exported="true" />
         <activity

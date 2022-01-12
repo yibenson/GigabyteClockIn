@@ -11,36 +11,100 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
+import com.example.clockin.databinding.PunchesBinding;
 import com.example.clockin.volley.VolleyDataRequester;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.util.ArrayList;
-import java.util.Arrays;
+import java.text.SimpleDateFormat;
 import java.util.Calendar;
-import java.util.Dictionary;
 import java.util.HashMap;
 import java.util.Objects;
 
 public class Punches extends AppCompatActivity implements PunchesAdapter.ItemClickListener {
+    private String HOST = "https://52.139.218.209:443/record/cal_working_hours";
 
     PunchesAdapter adapter;
     private JSONArray punches;
-    private String HOST = "https://52.139.218.209:443/record/cal_working_hours";
+    SwipeRefreshLayout mSwipeRefreshLayout;
+    private PunchesBinding binding;
+
+    // holds the curr date endpoint of record window
+    private Calendar calendar;
+    private SimpleDateFormat simpleDateFormat = new SimpleDateFormat("YYYY/MM/dd");
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.punches);
+        binding = PunchesBinding.inflate(getLayoutInflater());
+        setContentView(binding.getRoot());
+        mSwipeRefreshLayout = binding.swipeLayout;
         Objects.requireNonNull(getSupportActionBar()).setDisplayHomeAsUpEnabled(true);
 
-        // data to populate the RecyclerView with
-        Log.v("Response", "Oncreate");
-        populateDict();
+        calendar = Calendar.getInstance();
+        setDateWindow();
+        punches = new JSONArray();
+        setUpRecyclerView();
+        populateDict(calendar);
+    }
+
+    private void populateDict(Calendar calendar) {
+        HashMap<String, String> dates = getTimes(calendar);
+        String company_number = getIntent().getStringExtra("company_number");
+        String username = getIntent().getStringExtra("username");
+        HashMap<String, String> body = new HashMap<>();
+        body.put("account", company_number);
+        body.put("starttime", dates.get("prev"));
+        body.put("endtime", dates.get("curr"));
+
+        VolleyDataRequester.withSelfCertifiedHttps(getApplicationContext())
+                .setUrl(HOST)
+                .setBody(body)
+                .setMethod( VolleyDataRequester.Method.POST )
+                .setJsonResponseListener(response -> {
+                    try {
+                        if (!response.getBoolean("status")) {
+                            Toast.makeText(this, "Connection failed. Try again", Toast.LENGTH_LONG).show();
+                        } else {
+                            JSONObject jsonObject = response.getJSONObject("result");
+                            jsonObject = jsonObject.getJSONObject(username);
+                            JSONArray temp = jsonObject.getJSONArray("detail");
+                            int added_size = temp.length();
+                            // want earliest punches to go to front of list, latest (most recent) at end
+                            for (int i = 0; i < punches.length(); i++) {
+                                temp.put(punches.get(i));
+                            }
+                            punches = temp;
+                            adapter.updateData(punches);
+                            adapter.notifyItemRangeInserted(0, added_size);
+                        }
+                    } catch (JSONException e) {
+                        // means no more data, so do nothing
+                    }
+                }).requestJson();
+    }
+
+    private void setDateWindow() {
+        HashMap<String, String> dates = getTimes(calendar);
+        String curr = simpleDateFormat.format(Calendar.getInstance().getTime());
+        binding.dateWindow.setText(getString(R.string.date_window, dates.get("prev"), curr));
+    }
+
+
+    // given calendar, returns dict of calendar's time and string of calendar's time 30 days prior
+    private HashMap<String, String> getTimes(Calendar cldr) {
+        String curr = simpleDateFormat.format(cldr.getTime());
+        cldr.add(Calendar.DAY_OF_YEAR, -30);
+        String prev = simpleDateFormat.format(cldr.getTime());
+        cldr.add(Calendar.DAY_OF_YEAR, 30);
+        return new HashMap<String, String>() {{
+            put("curr", curr);
+            put("prev", prev);
+        }};
     }
 
     private void setUpRecyclerView() {
@@ -51,11 +115,21 @@ public class Punches extends AppCompatActivity implements PunchesAdapter.ItemCli
         recyclerView.setAdapter(adapter);
         DividerItemDecoration dividerItemDecoration = new DividerItemDecoration(recyclerView.getContext(),DividerItemDecoration.VERTICAL);
         recyclerView.addItemDecoration(dividerItemDecoration);
+        // populate dict automatically decrements calendar by 30 days
+        mSwipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                calendar.add(Calendar.DAY_OF_YEAR, -30);
+                setDateWindow();
+                populateDict(calendar);
+                mSwipeRefreshLayout.setRefreshing(false);
+            }
+        });
     }
 
     @Override
     public void onItemClick(View view, int position) {
-        // Toast.makeText(this, "You clicked " + adapter.getItem(position) + " on row number " + position, Toast.LENGTH_SHORT).show();
+        // TODO: Allow editing of punches
     }
 
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
@@ -65,48 +139,5 @@ public class Punches extends AppCompatActivity implements PunchesAdapter.ItemCli
                 return true;
         }
         return super.onOptionsItemSelected(item);
-    }
-
-    private void populateDict() {
-        Log.v("Response", "Populating dict");
-        Calendar calendar = Calendar.getInstance();
-        String curr_month = Integer.toString(calendar.get(Calendar.MONTH) + 1);
-        String curr_day = Integer.toString(calendar.get(Calendar.DAY_OF_MONTH)+1);
-        String curr = calendar.get(Calendar.YEAR) + "/" + curr_month +
-                "/" + curr_day;
-        calendar.add(Calendar.DAY_OF_YEAR, -30);
-        String prev_month = Integer.toString(calendar.get(Calendar.MONTH) + 1);
-        String prev = calendar.get(Calendar.YEAR) + "/" + prev_month +
-                "/" + calendar.get(Calendar.DAY_OF_MONTH);
-        calendar.add(Calendar.DAY_OF_YEAR, 30);
-
-        String company_number = getIntent().getStringExtra("company_number");
-        String username = getIntent().getStringExtra("username");
-        HashMap<String, String> body = new HashMap<>();
-        body.put("account", company_number);
-        body.put("starttime", prev);
-        body.put("endtime", curr);
-        Log.v("Response", body.toString());
-
-        VolleyDataRequester.withSelfCertifiedHttps(getApplicationContext())
-                .setUrl(HOST)
-                .setBody(body)
-                .setMethod( VolleyDataRequester.Method.POST )
-                .setJsonResponseListener(response -> {
-                    Log.v("Response", response.toString());
-                    try {
-                        if (!response.getBoolean("status")) {
-                            Toast.makeText(this, "Connection failed. Try again", Toast.LENGTH_LONG).show();
-                        } else {
-                            JSONObject jsonObject = response.getJSONObject("result");
-                            jsonObject = jsonObject.getJSONObject(username);
-                            punches = (JSONArray) jsonObject.get("detail");
-                        }
-                    } catch (JSONException e) {
-                        punches = new JSONArray();
-                    }
-                    setUpRecyclerView();
-                }).requestJson();
-
     }
 }

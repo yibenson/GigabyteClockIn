@@ -20,12 +20,12 @@
         app:layout_constraintTop_toTopOf="parent" />
 
     <EditText
-        android:id="@+id/company_username"
+        android:id="@+id/username"
         style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
         android:layout_width="300dp"
         android:layout_height="50dp"
         android:layout_marginTop="50dp"
-        android:hint="@string/company_username"
+        android:hint="@string/set_company_username"
         android:inputType="text"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -37,11 +37,11 @@
         android:layout_width="300dp"
         android:layout_height="50dp"
         android:layout_marginTop="20dp"
-        android:hint="@string/company_password"
-        android:inputType="text"
+        android:hint="@string/set_company_password"
+        android:inputType="textPassword"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/company_username"/>
+        app:layout_constraintTop_toBottomOf="@+id/username"/>
 
     <EditText
         android:id="@+id/confirm_password"
@@ -49,7 +49,7 @@
         android:layout_width="300dp"
         android:layout_height="50dp"
         android:layout_marginTop="24dp"
-        android:inputType="text"
+        android:inputType="textPassword"
         android:hint="@string/confirm_password"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -62,7 +62,7 @@
         android:layout_width="300dp"
         android:layout_height="50dp"
         android:layout_marginTop="24dp"
-        android:hint="@string/company_name"
+        android:hint="@string/set_company_name"
         android:inputType="text"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -74,17 +74,18 @@
         android:layout_width="300dp"
         android:layout_height="50dp"
         android:layout_marginTop="24dp"
-        android:hint="@string/email"
-        android:inputType="text"
+        android:hint="@string/set_company_email"
+        android:inputType="textEmailAddress"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/company_name"/>
+        app:layout_constraintTop_toBottomOf="@+id/company_name"
+        android:autofillHints="emailAddress" />
 
 
     <Button
-        android:id="@+id/register_button"
+        android:id="@+id/button"
         android:layout_width="166dp"
-        android:layout_height="47dp"
+        android:layout_height="48dp"
         android:layout_marginTop="24dp"
         android:text="@string/register"
         app:layout_constraintBottom_toBottomOf="parent"
