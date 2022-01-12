@@ -5,6 +5,7 @@ import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.Rect;
 import android.os.Bundle;
 
@@ -51,6 +52,9 @@ import android.widget.Toast;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.concurrent.ExecutionException;
@@ -154,13 +158,15 @@ public class FaceClockIn extends AppCompatActivity implements NavigationView.OnN
     }
 
     private void cropFace(ImageProxy image) {
-        Log.v("Response", "Attempting to identify image");
-        this.bitmap = FileUtils.toBitmap(image);
-        Log.v("Response", "ImageProxy to bitmap no error");
+        String imgString = FileUtils.saveImage(FileUtils.toBitmap(image), getApplicationContext());
+        File f = FileUtils.getPhotoFileUri(imgString, getApplicationContext());
+        try {
+            bitmap = BitmapFactory.decodeStream(new FileInputStream(f));
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        }
         InputImage inputImage = InputImage.fromBitmap(bitmap, rotation);
-        Log.v("Response", "inputImage from bitmap no error");
         faceDetector = FaceDetection.getClient();
-        Log.v("Response", "facedetection client grab no error");
         faceDetector.process(inputImage).addOnSuccessListener(faces -> {
             Log.v("Response", "Processing faces");
             if (!faces.isEmpty()) {
