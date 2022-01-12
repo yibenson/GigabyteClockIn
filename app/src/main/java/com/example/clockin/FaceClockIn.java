@@ -119,7 +119,12 @@ public class FaceClockIn extends AppCompatActivity implements NavigationView.OnN
                 ImageAnalysis imageAnalysis = new ImageAnalysis.Builder().build();
                 analysisExecutor = Executors.newSingleThreadExecutor();
                 LivenessAnalyzer livenessAnalyzer = new LivenessAnalyzer();
-                imageAnalysis.setAnalyzer(analysisExecutor, livenessAnalyzer);
+                imageAnalysis.setAnalyzer(analysisExecutor, new ImageAnalysis.Analyzer() {
+                    @Override
+                    public void analyze(@NonNull ImageProxy image) {
+                        rotation = image.getImageInfo().getRotationDegrees();
+                    }
+                });
 
                 // bind image capture
                 rotation = this.getWindowManager().getDefaultDisplay().getRotation();
