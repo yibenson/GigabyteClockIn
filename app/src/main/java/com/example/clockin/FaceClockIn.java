@@ -127,7 +127,6 @@ public class FaceClockIn extends AppCompatActivity implements NavigationView.OnN
                 });
 
                 // bind image capture
-                rotation = this.getWindowManager().getDefaultDisplay().getRotation();
                 ImageCapture imageCapture = new ImageCapture.Builder()
                         .setTargetRotation(rotation).build();
                 captureExecutor = Executors.newSingleThreadExecutor();
@@ -135,12 +134,7 @@ public class FaceClockIn extends AppCompatActivity implements NavigationView.OnN
                         imageCapture.takePicture(captureExecutor, new ImageCapture.OnImageCapturedCallback() {
                             @Override
                             public void onCaptureSuccess(@NonNull ImageProxy image) {
-                                if (true) {
-                                    cropFace(image);
-                                } else {
-                                    // TODO: Make into alert dialog?
-                                    runOnUiThread(() -> Toast.makeText(getApplicationContext(), "Please blink to ensure live image", Toast.LENGTH_LONG).show());
-                                }
+                                cropFace(image);
                                 image.close();
                             }
                         }));
