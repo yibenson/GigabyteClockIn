@@ -83,11 +83,14 @@ public class Homepage extends AppCompatActivity implements View.OnClickListener 
                 if (getIntent().getExtras().getBoolean("manager")) {
                     Intent employees_intent = new Intent(this, Employees.class);
                     employees_intent.putExtra("company_number", getIntent().getStringExtra("company_number"));
+                    employees_intent.putExtra("manager", getIntent().getBooleanExtra("manager", false));
+                    Log.v("Response", employees_intent.toString());
                     startActivity(employees_intent);
                 } else {
                     Intent profile_intent = new Intent(this, UserProfile.class);
                     profile_intent.putExtra("company_number", getIntent().getStringExtra("company_number"));
                     profile_intent.putExtra("username", getIntent().getStringExtra("username"));
+                    profile_intent.putExtra("manager", getIntent().getBooleanExtra("manager", false));
                     startActivity(profile_intent);
                 }
                 break;

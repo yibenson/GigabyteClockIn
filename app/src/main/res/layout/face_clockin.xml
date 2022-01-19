@@ -7,8 +7,7 @@
     android:id="@+id/my_drawer_layout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".FaceClockIn"
-    tools:ignore="HardcodedText">
+    tools:context=".FaceClockIn">
 
     <RelativeLayout
         android:layout_height="match_parent"
@@ -48,7 +47,7 @@
             android:layout_marginTop="40dp"
             android:layout_marginEnd="155dp"
             android:gravity="center_horizontal"
-            android:text="拍照" />
+            android:text="@string/identify" />
 
     </RelativeLayout>
 

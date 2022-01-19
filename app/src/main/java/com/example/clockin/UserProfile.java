@@ -22,6 +22,7 @@ import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.example.clockin.databinding.UserprofileBinding;
 import com.example.clockin.volley.VolleyDataRequester;
 
 import org.eazegraph.lib.charts.BarChart;
@@ -48,42 +49,31 @@ public class UserProfile extends AppCompatActivity {
     private ImageView photo;
 
     private JSONObject info;
-
     private Intent intent;
     private Intent punch_intent;
+    private boolean manager = false;
+    private boolean enable = false;
+    UserprofileBinding binding;
 
 
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.userprofile);
+        binding = UserprofileBinding.inflate(getLayoutInflater());
+        setContentView(binding.getRoot());
         Objects.requireNonNull(getSupportActionBar()).setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setTitle("User Profile");
         getSupportActionBar().setSubtitle("Account Information");
-
-        // TextViews
-        username = findViewById(R.id.profile_username);
-        email = findViewById(R.id.profile_email);
-        phone = findViewById(R.id.profile_phone);
-        wage = findViewById(R.id.profile_wage);
-        photo = findViewById(R.id.profile_photo);
-        view_punches = findViewById(R.id.view_punches);
-
         intent = new Intent(getApplicationContext(), EditPage.class);
+
+        binding.profilePhoto.setOnClickListener(view -> thing(view));
+        binding.profileEmail.setOnClickListener(view -> thing(view));
+        binding.profilePhone.setOnClickListener(view -> thing(view));
+        binding.profileWage.setOnClickListener(view -> thing(view));
+        binding.manager.setOnClickListener(view -> thing(view));
+        binding.active.setOnClickListener(view -> thing(view));
 
         // populate textviews/photo with user's info
         fillInfo();
-
-        view_punches.setOnClickListener(view -> {
-            punch_intent = new Intent(this, Punches.class);
-            punch_intent.putExtras(getIntent());
-            startActivity(punch_intent);
-        });
-
-        username.setOnClickListener(view -> thing(view));
-        email.setOnClickListener(view -> thing(view));
-        phone.setOnClickListener(view -> thing(view));
-        wage.setOnClickListener(view -> thing(view));
-        photo.setOnClickListener(view -> thing(view));
     }
 
     public void thing(View view) {
@@ -93,7 +83,7 @@ public class UserProfile extends AppCompatActivity {
             case R.id.profile_username:
                 intent.putExtra("Purpose", 0);
                 intent.putExtra("Info", info.toString());
-                startActivity(intent);
+                // startActivity(intent);
                 break;
             case R.id.profile_email:
                 intent.putExtra("Purpose", 2);
@@ -109,6 +99,25 @@ public class UserProfile extends AppCompatActivity {
                 intent.putExtra("Purpose", 3);
                 intent.putExtra("Info", info.toString());
                 startActivity(intent);
+                break;
+            case R.id.manager:
+                if (manager) {
+                    intent.putExtra("Purpose", 4);
+                    intent.putExtra("Info", info.toString());
+                    startActivity(intent);
+                }
+                break;
+            case R.id.active:
+                if (enable) {
+                    intent.putExtra("Purpose", 5);
+                    intent.putExtra("Info", info.toString());
+                    startActivity(intent);
+                }
+                break;
+            case R.id.view_punches:
+                punch_intent = new Intent(this, Punches.class);
+                punch_intent.putExtras(getIntent());
+                startActivity(punch_intent);
                 break;
             default:
                 Intent cam = new Intent(getApplicationContext(), FaceClockIn.class);
@@ -131,6 +140,7 @@ public class UserProfile extends AppCompatActivity {
                 .setBody(body)
                 .setMethod(VolleyDataRequester.Method.POST )
                 .setJsonResponseListener(response -> {
+                    Log.v("Response", response.toString());
                     try {
                         if (!response.getBoolean("status")) {
                             Toast.makeText(this, R.string.error_connecting, Toast.LENGTH_LONG).show();
@@ -143,13 +153,17 @@ public class UserProfile extends AppCompatActivity {
                                 }
                             }
                             info = jsonObject;
-                            username.setText(getString(R.string.name, jsonObject.getString("name")));
-                            phone.setText(getString(R.string.phone_number, jsonObject.getString("phone")));
-                            email.setText(getString(R.string.email, jsonObject.getString("mail")));
-                            wage.setText(getString(R.string.user_wage,jsonObject.getString("wage") ));
+                            binding.profileUsername.setText(getString(R.string.name, jsonObject.getString("name")));
+                            binding.profilePhone.setText(getString(R.string.phone_number, jsonObject.getString("phone")));
+                            binding.profileEmail.setText(getString(R.string.email, jsonObject.getString("mail")));
+                            binding.profileWage.setText(getString(R.string.user_wage,jsonObject.getString("wage") ));
+                            binding.manager.setText(getString(R.string.manager,jsonObject.getString("manager")));
+                            manager = Boolean.parseBoolean(jsonObject.getString("manager"));
+                            binding.active.setText(getString(R.string.active,jsonObject.getString("enable")));
+                            enable = Boolean.parseBoolean(jsonObject.getString("enable"));
                             byte[] decodedString = Base64.decode(jsonObject.getString("face").replace("\\n", "\n"), Base64.DEFAULT);
                             Bitmap decodedByte = BitmapFactory.decodeByteArray(decodedString, 0, decodedString.length);
-                            photo.setImageBitmap(decodedByte);
+                            binding.profilePhoto.setImageBitmap(decodedByte);
                         }
                     } catch (JSONException e) {
                         e.printStackTrace();
@@ -165,7 +179,4 @@ public class UserProfile extends AppCompatActivity {
         }
         return super.onOptionsItemSelected(item);
     }
-
-
-
 }

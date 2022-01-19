@@ -142,7 +142,7 @@ public class FaceClockIn extends AppCompatActivity implements NavigationView.OnN
                                 if (livenessAnalyzer.getLiveness()) {
                                     cropFace(image);
                                 } else {
-                                    runToast("Please blink to ensure live image");
+                                    runToast(getString(R.string.please_blink));
                                 }
                                 image.close();
                             }
@@ -167,7 +167,7 @@ public class FaceClockIn extends AppCompatActivity implements NavigationView.OnN
                 String base64 = FileUtils.getBase64String(compressedBitmap);
                 send(compressedBitmap, base64);
             } else {
-                Toast.makeText(getApplicationContext(), "No faces detected", Toast.LENGTH_LONG).show();
+                Toast.makeText(getApplicationContext(), getString(R.string.no_faces_detected), Toast.LENGTH_LONG).show();
             }
         });
     }
@@ -214,9 +214,11 @@ public class FaceClockIn extends AppCompatActivity implements NavigationView.OnN
                             .setBody(body)
                             .setMethod(VolleyDataRequester.Method.POST)
                             .setJsonResponseListener(response -> {
+                                Log.v("Response", response.toString());
                                 try {
+                                    Log.v("Response", response.toString());
                                     if (response.get("status").toString().equals("false")) {
-                                        runToast("Identification unsuccessful. Try again");
+                                        runToast(getString(R.string.identification_unsuccessful));
                                     } else {
                                         Intent id_intent = new Intent(getApplicationContext(), Homepage.class);
                                         JSONObject jsonObject = response.getJSONObject("result");
@@ -265,17 +267,17 @@ public class FaceClockIn extends AppCompatActivity implements NavigationView.OnN
         ImageView imageView = customLayout.findViewById(R.id.dialog_photo);
         TextView textView = customLayout.findViewById(R.id.dialog_username);
         imageView.setImageBitmap(bitmap);
-        textView.setText("Your photo");
+        textView.setText(getString(R.string.your_photo));
 
         // body and username null if registering user for first time; only body null if identifying user
         if ((body == null)) {
             if (username != null) {
                 textView.setText(username);
             }
-            builder.setPositiveButton("Confirm Photo", (dialog, which) -> {
+            builder.setPositiveButton(getString(R.string.confirm_photo), (dialog, which) -> {
                 startActivity(intent);
             });
-            builder.setNegativeButton("Retry?", (dialog, which) -> {
+            builder.setNegativeButton(getString(R.string.retry), (dialog, which) -> {
                 dialog.dismiss();
             });
         // only body null if identifying user
@@ -290,7 +292,7 @@ public class FaceClockIn extends AppCompatActivity implements NavigationView.OnN
                                 if (response.get("status").toString().equals("false")) {
                                     runToast(getString(R.string.error_connecting));
                                 } else {
-                                    runToast("Editing successful");
+                                    runToast(getString(R.string.editing_success));
                                     finish();
                                 }
                             } catch (JSONException e) {
@@ -298,7 +300,7 @@ public class FaceClockIn extends AppCompatActivity implements NavigationView.OnN
                             }
                         }).requestJson();
             });
-            builder.setNegativeButton("Retry?", (dialog, which) -> {
+            builder.setNegativeButton(getString(R.string.retry), (dialog, which) -> {
                 dialog.dismiss();
             });
         }
@@ -315,7 +317,7 @@ public class FaceClockIn extends AppCompatActivity implements NavigationView.OnN
             if (grantResults[0] == PackageManager.PERMISSION_DENIED) {
                 // todo: maybe move to alert dialog
                 Toast.makeText(this,
-                        "Please enable all permissions to use this app",
+                        getString(R.string.please_grant_permissions),
                         Toast.LENGTH_LONG)
                         .show();
                 finish();

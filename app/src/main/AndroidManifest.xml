@@ -31,9 +31,6 @@
             android:name=".CompanyRegistrationWindow"
             android:exported="true" />
         <activity
-            android:name=".ConfirmPhoto"
-            android:exported="true" />
-        <activity
             android:name=".FaceClockIn"
             android:exported="true" />
         <activity

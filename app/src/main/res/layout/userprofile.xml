@@ -112,6 +112,41 @@
             android:layout_height="2dp"
             android:backgroundTint="@color/design_default_color_primary_variant" />
 
+        <TextView
+            android:id="@+id/manager"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_marginTop="6dp"
+            android:layout_marginBottom="6dp"
+            android:layout_marginStart="8dp"
+            android:text="@string/manager"
+            android:textSize="20sp"
+            android:singleLine="true"
+            android:ellipsize="end"/>
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="2dp"
+            android:backgroundTint="@color/design_default_color_primary_variant" />
+
+        <TextView
+            android:id="@+id/active"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_marginTop="6dp"
+            android:layout_marginBottom="6dp"
+            android:layout_marginStart="8dp"
+            android:text="@string/active"
+            android:textSize="20sp"
+            android:singleLine="true"
+            android:ellipsize="end"/>
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="2dp"
+            android:backgroundTint="@color/design_default_color_primary_variant" />
+
+
         <Button
             android:id="@+id/view_punches"
             android:layout_width="wrap_content"
@@ -120,7 +155,7 @@
             android:layout_marginBottom="6dp"
             android:ellipsize="end"
             android:singleLine="true"
-            android:text="@string/set_photo"
+            android:text="@string/open_punches"
             android:textSize="20sp" />
 
         <View

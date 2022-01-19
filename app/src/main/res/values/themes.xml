@@ -13,11 +13,17 @@
         <!-- Status bar color. -->
         <item name="android:statusBarColor">@color/blue_grey</item>
         <!-- Customize your theme here. -->
+        <item name="android:datePickerStyle">@style/MyDatePicker</item>
+"
+    </style>
+
+    <style name="MyDatePicker" parent="android:Widget.Material.DatePicker">
+        <item name="android:datePickerMode">spinner</item>
     </style>
 
 
     <!--to toggle the open close button
         of the navigation drawer-->
-    <string name="nav_open">Open</string>
-    <string name="nav_close">Close</string>
+    <string name="nav_open">打開</string>
+    <string name="nav_close">關閉</string>
 </resources>

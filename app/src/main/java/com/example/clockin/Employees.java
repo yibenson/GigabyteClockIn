@@ -106,7 +106,7 @@ public class Employees extends AppCompatActivity implements EmployeesAdapter.Ite
                 .setJsonResponseListener(response -> {
                     try {
                         if (!response.getBoolean("status")) {
-                            Toast.makeText(this, "Connection failed. Try again", Toast.LENGTH_LONG).show();
+                            Toast.makeText(this, getString(R.string.error_connecting), Toast.LENGTH_LONG).show();
                         } else {
                             JSONArray jsonArray = response.getJSONArray("result");
                             for (int i = 0; i < jsonArray.length(); i++) {
@@ -146,6 +146,7 @@ public class Employees extends AppCompatActivity implements EmployeesAdapter.Ite
         Intent intent = new Intent(this, UserProfile.class);
         intent.putExtra("username", username);
         intent.putExtra("company_number", getIntent().getStringExtra("company_number"));
+
         startActivity(intent);
     }
 

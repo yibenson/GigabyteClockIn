@@ -49,6 +49,10 @@ public class EditPage extends AppCompatActivity {
                 case 3:
                     binding.textView.setText(info.getString("wage"));
                     break;
+                case 4:
+                    binding.textView.setText(getString(R.string.manager, info.getString("manager")));
+                case 5:
+                    binding.textView.setText(getString(R.string.active, info.getString("enable")));
             }
         } catch (JSONException e) {
             e.printStackTrace();
@@ -66,10 +70,10 @@ public class EditPage extends AppCompatActivity {
                     mapBody.put("manager", jsonObject.getString("manager"));
                     mapBody.put("sex", jsonObject.getString("sex"));
                     mapBody.put("birthday",  jsonObject.getString("birthday").replaceAll("\\.", "/"));
-                    mapBody.put("enable", "true");
+                    mapBody.put("enable", "");
                     switch (purpose) {
                         case 0:
-                            // dont change username?
+                            // users should not be able to change username
                             /**mapBody.put("name", binding.textView.getText().toString());
                             sendInfo(mapBody);
                              */
@@ -86,6 +90,22 @@ public class EditPage extends AppCompatActivity {
                             mapBody.put("wage", binding.textView.getText().toString());
                             sendInfo(mapBody);
                             break;
+                        case 4:
+                            String manager = binding.textView.getText().toString();
+                            if (!manager.equals("false")) {
+                                manager = "true";
+                            } else {
+                                manager = "false";
+                            }
+                            mapBody.put("manager", manager);
+                        case 5:
+                            String active = binding.textView.getText().toString();
+                            if (!active.equals("false")) {
+                                active = "true";
+                            } else {
+                                active = "false";
+                            }
+                            mapBody.put("enable", active);
                     }
                 } catch (JSONException e) {
                     e.printStackTrace();

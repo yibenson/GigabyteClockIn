@@ -1,6 +1,7 @@
 package com.example.clockin;
 
 import android.content.Context;
+import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
@@ -13,6 +14,8 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.recyclerview.widget.RecyclerView;
+
+import com.example.clockin.volley.VolleyHelperApplication;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -54,7 +57,7 @@ public class EmployeesAdapter extends RecyclerView.Adapter<EmployeesAdapter.View
             users.addAll(mData.keySet());
             // retrieve from JSONObject
             JSONObject employee = mData.get(users.get(position));
-            holder.username.setText(employee.getString("user"));
+            holder.username.setText(users.get(position));
             holder.clockedIn = employee.getString("status").equals("ON");
             holder.color();
             String base64 = employee.getString("image");
@@ -93,10 +96,10 @@ public class EmployeesAdapter extends RecyclerView.Adapter<EmployeesAdapter.View
 
         public void color() {
             if (clockedIn) {
-                status.setText("STATUS: ON");
+                status.setText(VolleyHelperApplication.getInstance().getResources().getString(R.string.status_on));
                 itemView.setBackgroundColor(green);
             } else {
-                status.setText("STATUS: OFF");
+                status.setText(VolleyHelperApplication.getInstance().getResources().getString(R.string.status_off));
                 itemView.setBackgroundColor(red);
             }
         }

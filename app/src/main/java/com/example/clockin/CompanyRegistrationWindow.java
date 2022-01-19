@@ -58,15 +58,16 @@ public class CompanyRegistrationWindow extends AppCompatActivity {
                 .setBody(body)
                 .setMethod(VolleyDataRequester.Method.POST)
                 .setJsonResponseListener(response -> {
+                    Log.v("Response", response.toString());
                     try {
-                        switch (response.getInt("error_msg")) {
-                            case 610:
+                        switch (response.getString("error_msg")) {
+                            case "ACCOUNT IS REGISTER":
                                 binding.username.setError(getString(R.string.duplicate_account));
                                 break;
-                            case 611:
+                            case "ACCOUNT IS INVALID":
                                 binding.username.setError(getString(R.string.invalid_account));
                                 break;
-                            case 612:
+                            case "PASSWORD LENGTH IS INVALID":
                                 binding.password.setError(getString(R.string.password_empty));
                                 break;
                             default:
