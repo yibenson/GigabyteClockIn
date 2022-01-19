@@ -20,7 +20,9 @@
         android:id="@+id/swipeLayout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_below="@+id/date_window">
+        android:layout_below="@+id/date_window"
+        android:layout_marginTop="30dp">
+
 
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/rvPunches"
@@ -28,5 +30,17 @@
             android:layout_height="match_parent" />
 
     </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
+
+    <TextView
+        android:id="@+id/data_notif"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="30dp"
+        android:layout_marginBottom="30dp"
+        android:textSize="20sp"
+        android:visibility="invisible">
+
+    </TextView>
 
 </RelativeLayout>

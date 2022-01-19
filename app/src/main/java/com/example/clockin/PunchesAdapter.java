@@ -27,9 +27,6 @@ public class PunchesAdapter extends RecyclerView.Adapter<PunchesAdapter.ViewHold
     private LayoutInflater mInflater;
     private ItemClickListener mClickListener;
 
-    private final int VIEW_TYPE_PUNCH = 0;
-    private final int VIEW_TYPE_LOADING = 1;
-
     // data is passed into the constructor
     PunchesAdapter(Context context, JSONArray data) {
         this.mInflater = LayoutInflater.from(context);

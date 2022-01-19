@@ -83,10 +83,10 @@ public class UserProfile extends AppCompatActivity {
         email.setOnClickListener(view -> thing(view));
         phone.setOnClickListener(view -> thing(view));
         wage.setOnClickListener(view -> thing(view));
+        photo.setOnClickListener(view -> thing(view));
     }
 
     public void thing(View view) {
-        Log.v("Response", "Attempting onclick");
         intent.putExtra("company_number", getIntent().getStringExtra("company_number"));
         intent.putExtra("username", getIntent().getStringExtra("username"));
         switch (view.getId()) {
@@ -109,6 +109,14 @@ public class UserProfile extends AppCompatActivity {
                 intent.putExtra("Purpose", 3);
                 intent.putExtra("Info", info.toString());
                 startActivity(intent);
+                break;
+            default:
+                Intent cam = new Intent(getApplicationContext(), FaceClockIn.class);
+                cam.putExtra("company_number", getIntent().getStringExtra("company_number"));
+                cam.putExtra("Purpose", "Edit");
+                cam.putExtras(intent.getExtras());
+                cam.putExtra("Info", info.toString());
+                startActivity(cam);
                 break;
         }
     }

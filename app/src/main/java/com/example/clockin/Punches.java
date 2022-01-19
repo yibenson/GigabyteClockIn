@@ -4,6 +4,7 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.ProgressBar;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -44,7 +45,6 @@ public class Punches extends AppCompatActivity implements PunchesAdapter.ItemCli
         setContentView(binding.getRoot());
         mSwipeRefreshLayout = binding.swipeLayout;
         Objects.requireNonNull(getSupportActionBar()).setDisplayHomeAsUpEnabled(true);
-
         calendar = Calendar.getInstance();
         setDateWindow();
         punches = new JSONArray();
@@ -67,6 +67,7 @@ public class Punches extends AppCompatActivity implements PunchesAdapter.ItemCli
                 .setMethod( VolleyDataRequester.Method.POST )
                 .setJsonResponseListener(response -> {
                     try {
+                        Log.v("Response", response.toString());
                         if (!response.getBoolean("status")) {
                             Toast.makeText(this, "Connection failed. Try again", Toast.LENGTH_LONG).show();
                         } else {
@@ -79,6 +80,9 @@ public class Punches extends AppCompatActivity implements PunchesAdapter.ItemCli
                                 temp.put(punches.get(i));
                             }
                             punches = temp;
+                            if (punches.length()==0) {
+                                Toast.makeText(getApplicationContext(), "No data detected", Toast.LENGTH_LONG).show();
+                            }
                             adapter.updateData(punches);
                             adapter.notifyItemRangeInserted(0, added_size);
                         }
@@ -116,14 +120,11 @@ public class Punches extends AppCompatActivity implements PunchesAdapter.ItemCli
         DividerItemDecoration dividerItemDecoration = new DividerItemDecoration(recyclerView.getContext(),DividerItemDecoration.VERTICAL);
         recyclerView.addItemDecoration(dividerItemDecoration);
         // populate dict automatically decrements calendar by 30 days
-        mSwipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
-            @Override
-            public void onRefresh() {
-                calendar.add(Calendar.DAY_OF_YEAR, -30);
-                setDateWindow();
-                populateDict(calendar);
-                mSwipeRefreshLayout.setRefreshing(false);
-            }
+        mSwipeRefreshLayout.setOnRefreshListener(() -> {
+            calendar.add(Calendar.DAY_OF_YEAR, -30);
+            setDateWindow();
+            populateDict(calendar);
+            mSwipeRefreshLayout.setRefreshing(false);
         });
     }
 

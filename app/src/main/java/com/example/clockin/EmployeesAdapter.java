@@ -67,15 +67,6 @@ public class EmployeesAdapter extends RecyclerView.Adapter<EmployeesAdapter.View
         }
     }
 
-    public static void largeLog(String tag, String content) {
-        if (content.length() > 4000) {
-            Log.d(tag, content.substring(0, 4000));
-            largeLog(tag, content.substring(4000));
-        } else {
-            Log.d(tag, content);
-        }
-    }
-
     // total number of rows
     @Override
     public int getItemCount() {

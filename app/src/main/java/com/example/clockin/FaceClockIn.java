@@ -66,6 +66,9 @@ public class FaceClockIn extends AppCompatActivity implements NavigationView.OnN
     private static final int REQUEST_CODE_CAMERA_PERMISSION = 200;
 
     private static String HOST = "https://52.139.218.209:443/";
+    private static final String IDENTIFY = "Identify";
+    private static final String REGISTER = "Register";
+    private static final String EDIT = "Edit";
 
     // camera variables
     private ListenableFuture<ProcessCameraProvider> cameraProviderFuture;
@@ -77,11 +80,11 @@ public class FaceClockIn extends AppCompatActivity implements NavigationView.OnN
 
     // layout variables
     private FaceClockinBinding binding;
-    public DrawerLayout drawerLayout;
     public ActionBarDrawerToggle actionBarDrawerToggle;
 
     // bitmap = photo we take
     private Bitmap bitmap;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -125,12 +128,7 @@ public class FaceClockIn extends AppCompatActivity implements NavigationView.OnN
                 ImageAnalysis imageAnalysis = new ImageAnalysis.Builder().build();
                 analysisExecutor = Executors.newSingleThreadExecutor();
                 LivenessAnalyzer livenessAnalyzer = new LivenessAnalyzer();
-                imageAnalysis.setAnalyzer(analysisExecutor, new ImageAnalysis.Analyzer() {
-                    @Override
-                    public void analyze(@NonNull ImageProxy image) {
-                        rotation = image.getImageInfo().getRotationDegrees();
-                    }
-                });
+                imageAnalysis.setAnalyzer(analysisExecutor, livenessAnalyzer);
 
                 // bind image capture
                 rotation = getWindowManager().getDefaultDisplay().getRotation();
@@ -141,57 +139,41 @@ public class FaceClockIn extends AppCompatActivity implements NavigationView.OnN
                         imageCapture.takePicture(captureExecutor, new ImageCapture.OnImageCapturedCallback() {
                             @Override
                             public void onCaptureSuccess(@NonNull ImageProxy image) {
-                                saveFace(image);
+                                if (livenessAnalyzer.getLiveness()) {
+                                    cropFace(image);
+                                } else {
+                                    runToast("Please blink to ensure live image");
+                                }
                                 image.close();
                             }
-
-                            @Override
-                            public void onError(@NonNull ImageCaptureException exception) {
-                                super.onError(exception);
-                            }
                         }));
-                cameraProvider.bindToLifecycle(this, cameraSelector, imageCapture, preview);
+                cameraProvider.bindToLifecycle(this, cameraSelector, imageAnalysis, imageCapture, preview);
             } catch (ExecutionException | InterruptedException e) {
                 e.printStackTrace();
             }
         }, ContextCompat.getMainExecutor(this));
     }
 
-    private void saveFace(ImageProxy image) {
+    private void cropFace(ImageProxy image) {
         this.bitmap = FileUtils.toBitmap(image);
         InputImage inputImage = InputImage.fromBitmap(bitmap, 0);
         faceDetector = FaceDetection.getClient();
         faceDetector.process(inputImage).addOnSuccessListener(faces -> {
             if (!faces.isEmpty()) {
-                cropFace();
+                Face face = faces.get(0);
+                Rect rect = face.getBoundingBox();
+                Bitmap croppedBmp = Bitmap.createBitmap(bitmap, rect.left, rect.top, rect.width(), rect.height());
+                Bitmap compressedBitmap = Bitmap.createScaledBitmap(croppedBmp, 150, 150, false);
+                String base64 = FileUtils.getBase64String(compressedBitmap);
+                send(compressedBitmap, base64);
             } else {
                 Toast.makeText(getApplicationContext(), "No faces detected", Toast.LENGTH_LONG).show();
             }
         });
     }
 
-    private void cropFace() {
-        Bitmap image = this.bitmap;
-        InputImage inputImage = InputImage.fromBitmap(image, 0);
-        FaceDetector faceDetector = FaceDetection.getClient();
-        faceDetector.process(inputImage).addOnSuccessListener(faces -> {
-            if (!faces.isEmpty()) {
-                Face face = faces.get(0);
-                Rect rect = face.getBoundingBox();
-                try {
-                    Bitmap croppedBmp = Bitmap.createBitmap(image, rect.left, rect.top, rect.width(), rect.height());
-                    Bitmap compressedBitmap = Bitmap.createScaledBitmap(croppedBmp, 150, 150, false);
-                    String base64 = FileUtils.getBase64String(compressedBitmap);
-                    FileUtils.saveImage(compressedBitmap, this);
-                    send(compressedBitmap, base64);
-                } catch (IllegalArgumentException e) {
-                    e.printStackTrace();
-                }
-            }
-        });
-    }
-
     private void send(Bitmap bitmap, String base64) {
+        // we pass bitmap through face detection again so landmark coordinates correspond to cropped img
         InputImage inputImage = InputImage.fromBitmap(bitmap, 0);
         FaceDetectorOptions options = new FaceDetectorOptions.Builder()
                 .setLandmarkMode(FaceDetectorOptions.LANDMARK_MODE_ALL).build();
@@ -211,61 +193,115 @@ public class FaceClockIn extends AppCompatActivity implements NavigationView.OnN
                     e.printStackTrace();
                 }
             }
-
         }).addOnCompleteListener(task -> {
-            if (getIntent().getStringExtra("Purpose").equals("Register")) {
-                Intent intent = new Intent(getApplicationContext(), UserRegistrationWindow.class);
-                intent.putExtras(getIntent().getExtras());
-                intent.putExtra("landmark", Arrays.toString(arr));
-                intent.putExtra("photo", base64);
-                startActivity(intent);
-            } else {
-                HashMap<String, String> body = new HashMap<>();
-                body.put("account", getIntent().getStringExtra("company_number"));
-                body.put("cropimage", base64);
-                body.put("landmark", Arrays.toString(arr));
-                VolleyDataRequester.withSelfCertifiedHttps(getApplicationContext())
-                        .setUrl(HOST+"identify/identify")
-                        .setBody(body)
-                        .setMethod(VolleyDataRequester.Method.POST)
-                        .setJsonResponseListener(response -> {
-                            try {
-                                if (response.get("status").toString().equals("false")) {
-                                    Toast.makeText(getApplicationContext(), "Identification unsuccessful. Try again", Toast.LENGTH_LONG).show();
-                                } else {
-                                    Intent intent = new Intent(getApplicationContext(), Homepage.class);
-                                    JSONObject jsonObject = response.getJSONObject("result");
-                                    intent.putExtra("company_number", getIntent().getStringExtra("company_number"));
-                                    intent.putExtra("username", jsonObject.getString("username"));
-                                    intent.putExtra("manager", jsonObject.getBoolean("manager"));
-                                    intent.putExtra("user_object_id", jsonObject.getString("user_object_id"));
-                                    intent.putExtra("record_object_id", jsonObject.getString("record_object_id"));
-                                    showAlertDialog(jsonObject.getString("username"), intent);
+            switch (getIntent().getStringExtra("Purpose")) {
+                case REGISTER:
+                    // if registering a user for the first time
+                    Intent intent = new Intent(getApplicationContext(), UserRegistrationWindow.class);
+                    intent.putExtras(getIntent().getExtras());
+                    intent.putExtra("landmark", Arrays.toString(arr));
+                    intent.putExtra("photo", base64);
+                    showAlertDialog(null, intent, null);
+                    break;
+                case IDENTIFY:
+                    // if identifying a user to login
+                    HashMap<String, String> body = new HashMap<>();
+                    body.put("account", getIntent().getStringExtra("company_number"));
+                    body.put("cropimage", base64);
+                    body.put("landmark", Arrays.toString(arr));
+                    VolleyDataRequester.withSelfCertifiedHttps(getApplicationContext())
+                            .setUrl(HOST+"identify/identify")
+                            .setBody(body)
+                            .setMethod(VolleyDataRequester.Method.POST)
+                            .setJsonResponseListener(response -> {
+                                try {
+                                    if (response.get("status").toString().equals("false")) {
+                                        runToast("Identification unsuccessful. Try again");
+                                    } else {
+                                        Intent id_intent = new Intent(getApplicationContext(), Homepage.class);
+                                        JSONObject jsonObject = response.getJSONObject("result");
+                                        id_intent.putExtra("company_number", getIntent().getStringExtra("company_number"));
+                                        id_intent.putExtra("username", jsonObject.getString("username"));
+                                        id_intent.putExtra("manager", jsonObject.getBoolean("manager"));
+                                        id_intent.putExtra("user_object_id", jsonObject.getString("user_object_id"));
+                                        id_intent.putExtra("record_object_id", jsonObject.getString("record_object_id"));
+                                        showAlertDialog(jsonObject.getString("username"), id_intent, null);
+                                    }
+                                } catch (JSONException e) {
+                                    e.printStackTrace();
                                 }
-                            } catch (JSONException e) {
-                                e.printStackTrace();
-                            }
-                        })
-                        .requestJson();
+                            })
+                            .requestJson();
+                    break;
+                case EDIT:
+                    // if ediitng the login photo for a user
+                    HashMap<String, String> mapBody = new HashMap<>();
+                    try {
+                        JSONObject jsonObject = new JSONObject(getIntent().getStringExtra("Info"));
+                        String name = jsonObject.getString("name");
+                        mapBody.put("account", getIntent().getExtras().getString("company_number"));
+                        mapBody.put("name", jsonObject.getString("name"));
+                        mapBody.put("phone", jsonObject.getString("phone"));
+                        mapBody.put("mail", jsonObject.getString("mail"));
+                        mapBody.put("manager", jsonObject.getString("manager"));
+                        mapBody.put("wage", jsonObject.getString("wage"));
+                        mapBody.put("sex", jsonObject.getString("sex"));
+                        mapBody.put("birthday",  jsonObject.getString("birthday").replaceAll("\\.", "/"));
+                        mapBody.put("enable", "true");
+                        mapBody.put("face", base64);
+                        mapBody.put("landmark", Arrays.toString(arr));
+                        showAlertDialog(name, null, mapBody);
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
             }
         });
     }
 
-    private void showAlertDialog(String username, Intent intent) {
+    private void showAlertDialog(String username, Intent intent, HashMap<String, String> body) {
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         final View customLayout = getLayoutInflater().inflate(R.layout.confirm_dialog, null);
         builder.setView(customLayout);
         ImageView imageView = customLayout.findViewById(R.id.dialog_photo);
         TextView textView = customLayout.findViewById(R.id.dialog_username);
-        textView.setText(username);
         imageView.setImageBitmap(bitmap);
-        // add a button
-        builder.setPositiveButton("Login", (dialog, which) -> {
-            startActivity(intent);
-        });
-        builder.setNegativeButton("Not you?", (dialog, which) -> {
-            dialog.dismiss();
-        });
+        textView.setText("Your photo");
+
+        // body and username null if registering user for first time; only body null if identifying user
+        if ((body == null)) {
+            if (username != null) {
+                textView.setText(username);
+            }
+            builder.setPositiveButton("Confirm Photo", (dialog, which) -> {
+                startActivity(intent);
+            });
+            builder.setNegativeButton("Retry?", (dialog, which) -> {
+                dialog.dismiss();
+            });
+        // only body null if identifying user
+        } else {
+            builder.setPositiveButton("Confirm Photo", (dialog, which) -> {
+                VolleyDataRequester.withSelfCertifiedHttps(getApplicationContext())
+                        .setUrl(HOST+"user/edit_user_profile")
+                        .setBody(body)
+                        .setMethod(VolleyDataRequester.Method.POST)
+                        .setJsonResponseListener(response -> {
+                            try {
+                                if (response.get("status").toString().equals("false")) {
+                                    runToast(getString(R.string.error_connecting));
+                                } else {
+                                    runToast("Editing successful");
+                                    finish();
+                                }
+                            } catch (JSONException e) {
+                                e.printStackTrace();
+                            }
+                        }).requestJson();
+            });
+            builder.setNegativeButton("Retry?", (dialog, which) -> {
+                dialog.dismiss();
+            });
+        }
         AlertDialog dialog = builder.create();
         dialog.show();
     }
@@ -296,6 +332,11 @@ public class FaceClockIn extends AppCompatActivity implements NavigationView.OnN
             }
         }
         return true;
+    }
+
+    private void runToast(String msg) {
+        final String str = msg;
+        runOnUiThread(() -> Toast.makeText(getApplicationContext(), str, Toast.LENGTH_LONG).show());
     }
 
 
