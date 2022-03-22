@@ -1,31 +1,27 @@
-package com.example.clockin;
+package com.example.clockin.punch_sections;
 
 import android.content.Context;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ProgressBar;
 import android.widget.TextView;
 
-import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.example.clockin.databinding.PunchRowBinding;
+import com.example.clockin.R;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Date;
-import java.util.List;
 
 public class PunchesAdapter extends RecyclerView.Adapter<PunchesAdapter.ViewHolder> {
     private JSONArray mData;
-    private LayoutInflater mInflater;
+    private final LayoutInflater mInflater;
     private ItemClickListener mClickListener;
+    private final Context context;
 
     // data is passed into the constructor
     PunchesAdapter(Context context, JSONArray data) {
@@ -35,7 +31,7 @@ public class PunchesAdapter extends RecyclerView.Adapter<PunchesAdapter.ViewHold
         } else {
             this.mData = data;
         }
-        Log.v("Punches", mData.toString());
+        this.context = context;
     }
 
     // inflates the row layout from xml when needed
@@ -59,9 +55,8 @@ public class PunchesAdapter extends RecyclerView.Adapter<PunchesAdapter.ViewHold
 
             holder.inDate.setText(date.format(clockin));
             holder.inTime.setText(hour.format(clockin));
-            holder.outDate.setText(date.format(clockout));
             holder.outTime.setText(hour.format(clockout));
-            holder.totalTime.setText(total);
+            holder.totalTime.setText(context.getString(R.string.hours, total));
         } catch (ParseException | JSONException e) {
             e.printStackTrace();
         }
@@ -82,7 +77,6 @@ public class PunchesAdapter extends RecyclerView.Adapter<PunchesAdapter.ViewHold
     public class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
         public TextView inDate;
         public TextView inTime;
-        public TextView outDate;
         public TextView outTime;
         public TextView totalTime;
 
@@ -90,7 +84,6 @@ public class PunchesAdapter extends RecyclerView.Adapter<PunchesAdapter.ViewHold
             super(itemView);
             inDate = itemView.findViewById(R.id.in_date);
             inTime = itemView.findViewById(R.id.in_time);
-            outDate = itemView.findViewById(R.id.out_date);
             outTime = itemView.findViewById(R.id.out_time);
             totalTime = itemView.findViewById(R.id.total_time);
             itemView.setOnClickListener(this);

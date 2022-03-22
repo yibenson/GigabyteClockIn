@@ -20,10 +20,10 @@
 
         <activity
             android:name=".MainActivity"
-            android:exported="true">
+            android:exported="true"
+            android:theme="@style/Theme.ClockIn">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
@@ -45,13 +45,19 @@
         <activity
             android:name=".Employees"
             android:exported="true" />
+        <activity
+            android:name=".ManagementMenu"
+            android:exported="true" />
 
         <activity
             android:name=".EditPage"
             android:exported="true" />
 
         <activity
-            android:name=".Punches"
+            android:name=".punch_sections.Punches"
+            android:exported="true" />
+        <activity
+            android:name=".punch_sections.ManagementPunches"
             android:exported="true" />
     </application>
 

@@ -4,34 +4,20 @@ import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.graphics.Color;
 import android.os.Bundle;
-import android.os.Parcelable;
 import android.util.Base64;
 import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.ImageView;
-import android.widget.TextView;
 import android.widget.Toast;
 
-import androidx.activity.result.ActivityResultCallback;
-import androidx.activity.result.ActivityResultLauncher;
-import androidx.activity.result.contract.ActivityResultContract;
-import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.clockin.databinding.UserprofileBinding;
+import com.example.clockin.punch_sections.Punches;
 import com.example.clockin.volley.VolleyDataRequester;
 
-import org.eazegraph.lib.charts.BarChart;
-import org.eazegraph.lib.charts.PieChart;
-import org.eazegraph.lib.charts.ValueLineChart;
-import org.eazegraph.lib.models.BarModel;
-import org.eazegraph.lib.models.PieModel;
-import org.eazegraph.lib.models.ValueLinePoint;
-import org.eazegraph.lib.models.ValueLineSeries;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -41,12 +27,6 @@ import java.util.Objects;
 
 public class UserProfile extends AppCompatActivity {
     private String HOST = "https://52.139.218.209:443/user/get_user_profile";
-    private TextView username;
-    private TextView email;
-    private TextView phone;
-    private TextView wage;
-    private TextView view_punches;
-    private ImageView photo;
 
     private JSONObject info;
     private Intent intent;
@@ -61,8 +41,7 @@ public class UserProfile extends AppCompatActivity {
         binding = UserprofileBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
         Objects.requireNonNull(getSupportActionBar()).setDisplayHomeAsUpEnabled(true);
-        getSupportActionBar().setTitle("User Profile");
-        getSupportActionBar().setSubtitle("Account Information");
+        getSupportActionBar().setTitle(R.string.profile_title);
         intent = new Intent(getApplicationContext(), EditPage.class);
 
         binding.profilePhoto.setOnClickListener(view -> thing(view));
@@ -77,40 +56,40 @@ public class UserProfile extends AppCompatActivity {
     }
 
     public void thing(View view) {
-        intent.putExtra("company_number", getIntent().getStringExtra("company_number"));
-        intent.putExtra("username", getIntent().getStringExtra("username"));
+        intent.putExtra("ACCOUNT", getIntent().getStringExtra("ACCOUNT"));
+        intent.putExtra("USERNAME", getIntent().getStringExtra("USERNAME"));
         switch (view.getId()) {
             case R.id.profile_username:
-                intent.putExtra("Purpose", 0);
-                intent.putExtra("Info", info.toString());
+                intent.putExtra("PURPOSE", 0);
+                intent.putExtra("INFO", info.toString());
                 // startActivity(intent);
                 break;
             case R.id.profile_email:
-                intent.putExtra("Purpose", 2);
-                intent.putExtra("Info", info.toString());
+                intent.putExtra("PURPOSE", 2);
+                intent.putExtra("INFO", info.toString());
                 startActivity(intent);
                 break;
             case R.id.profile_phone:
-                intent.putExtra("Purpose", 1);
-                intent.putExtra("Info", info.toString());
+                intent.putExtra("PURPOSE", 1);
+                intent.putExtra("INFO", info.toString());
                 startActivity(intent);
                 break;
             case R.id.profile_wage:
-                intent.putExtra("Purpose", 3);
-                intent.putExtra("Info", info.toString());
+                intent.putExtra("PURPOSE", 3);
+                intent.putExtra("INFO", info.toString());
                 startActivity(intent);
                 break;
             case R.id.manager:
                 if (manager) {
-                    intent.putExtra("Purpose", 4);
-                    intent.putExtra("Info", info.toString());
+                    intent.putExtra("PURPOSE", 4);
+                    intent.putExtra("INFO", info.toString());
                     startActivity(intent);
                 }
                 break;
             case R.id.active:
                 if (enable) {
-                    intent.putExtra("Purpose", 5);
-                    intent.putExtra("Info", info.toString());
+                    intent.putExtra("PURPOSE", 5);
+                    intent.putExtra("INFO", info.toString());
                     startActivity(intent);
                 }
                 break;
@@ -121,10 +100,10 @@ public class UserProfile extends AppCompatActivity {
                 break;
             default:
                 Intent cam = new Intent(getApplicationContext(), FaceClockIn.class);
-                cam.putExtra("company_number", getIntent().getStringExtra("company_number"));
-                cam.putExtra("Purpose", "Edit");
+                cam.putExtra("ACCOUNT", getIntent().getStringExtra("ACCOUNT"));
+                cam.putExtra("PURPOSE", "EDIT");
                 cam.putExtras(intent.getExtras());
-                cam.putExtra("Info", info.toString());
+                cam.putExtra("INFO", info.toString());
                 startActivity(cam);
                 break;
         }
@@ -133,8 +112,8 @@ public class UserProfile extends AppCompatActivity {
     @SuppressLint("SetTextI18n")
     public void fillInfo() {
         HashMap<String, String> body = new HashMap<>();
-        body.put("account", getIntent().getExtras().getString("company_number"));
-        String name = getIntent().getStringExtra("username");
+        body.put("account", getIntent().getExtras().getString("ACCOUNT"));
+        String name = getIntent().getStringExtra("USERNAME");
         VolleyDataRequester.withSelfCertifiedHttps(getApplicationContext())
                 .setUrl(HOST)
                 .setBody(body)

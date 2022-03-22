@@ -24,53 +24,116 @@
         android:layout_height="wrap_content"
         app:layout_constraintStart_toStartOf="@+id/welcome"
         app:layout_constraintTop_toBottomOf="@+id/welcome"
-        android:layout_marginTop="12dp"/>
+        android:layout_marginTop="12dp"
+        android:alpha="0.0"/>
 
-    <ImageButton
-        android:id="@+id/clockin"
-        android:layout_width="175dp"
-        android:layout_height="175dp"
-        android:layout_marginTop="24dp"
-        android:adjustViewBounds="true"
-        android:background="@drawable/clockin"
-        android:scaleType="fitCenter"
-        app:layout_constraintStart_toStartOf="@+id/welcome"
-        app:layout_constraintTop_toBottomOf="@+id/chronometer" />
 
-    <ImageButton
-        android:id="@+id/clockout"
-        android:layout_width="175dp"
-        android:layout_height="175dp"
-        android:layout_marginStart="24dp"
-        android:layout_marginTop="24dp"
-        android:adjustViewBounds="true"
-        android:background="@drawable/clockout"
-        android:scaleType="fitCenter"
-        app:layout_constraintStart_toEndOf="@+id/clockin"
-        app:layout_constraintTop_toBottomOf="@+id/chronometer" />
+    <TextView
+        android:id="@+id/clockin_msg"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="48dp"
+        android:text="@string/clockin_time"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.158"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/welcome" />
+
+    <TextView
+        android:id="@+id/clockin_time"
+        android:layout_width="120dp"
+        android:layout_height="52dp"
+        android:layout_marginTop="32dp"
+        android:text="- - : - -"
+        android:textAlignment="center"
+        android:textSize="32sp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.498"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/clockin_msg" />
+
+    <Button
+        android:id="@+id/clockin_button"
+        android:layout_width="60dp"
+        android:layout_height="60dp"
+        android:background="@drawable/inactive"
+        app:layout_constraintBottom_toBottomOf="@+id/clockin_time"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.181"
+        app:layout_constraintStart_toEndOf="@+id/clockin_time"
+        app:layout_constraintTop_toTopOf="@+id/clockin_time" />
+
+
+    <TextView
+        android:id="@+id/clockoutmsg"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="28dp"
+        android:text="@string/clockout_time"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.158"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/clockin_time" />
+
+    <TextView
+        android:id="@+id/clockout_time"
+        android:layout_width="120dp"
+        android:layout_height="52dp"
+        android:layout_marginTop="28dp"
+        android:text="- - : - -"
+        android:textAlignment="center"
+        android:textSize="32sp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/clockoutmsg" />
+
+    <Button
+        android:id="@+id/clockout_button"
+        android:layout_width="60dp"
+        android:layout_height="60dp"
+        android:background="@drawable/inactive"
+        app:layout_constraintBottom_toBottomOf="@+id/clockout_time"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.188"
+        app:layout_constraintStart_toEndOf="@+id/clockout_time"
+        app:layout_constraintTop_toTopOf="@+id/clockout_time" />
+
 
     <ImageButton
         android:id="@+id/viewpunches"
-        android:layout_width="175dp"
-        android:layout_height="175dp"
-        android:layout_marginTop="24dp"
+        android:layout_width="320dp"
+        android:layout_height="73dp"
+        android:layout_marginStart="28dp"
+        android:layout_marginTop="60dp"
         android:adjustViewBounds="true"
-        android:background="@drawable/schedule"
+        android:background="@drawable/punches"
         android:scaleType="fitCenter"
         app:layout_constraintStart_toStartOf="@+id/welcome"
-        app:layout_constraintTop_toBottomOf="@+id/clockin" />
+        app:layout_constraintTop_toBottomOf="@+id/clockout_time" />
 
     <ImageButton
         android:id="@+id/companyinfo"
-        android:layout_width="175dp"
-        android:layout_height="175dp"
-        android:layout_marginStart="24dp"
-        android:layout_marginTop="24dp"
+        android:layout_width="326dp"
+        android:layout_height="77dp"
+        android:layout_marginTop="16dp"
         android:adjustViewBounds="true"
-        android:background="@drawable/info"
+        android:background="@drawable/profile"
         android:scaleType="fitCenter"
-        app:layout_constraintStart_toEndOf="@+id/viewpunches"
-        app:layout_constraintTop_toBottomOf="@+id/clockout" />
+        app:layout_constraintStart_toStartOf="@+id/viewpunches"
+        app:layout_constraintTop_toBottomOf="@+id/viewpunches" />
+
+    <ImageButton
+        android:id="@+id/logout"
+        android:layout_width="326dp"
+        android:layout_height="77dp"
+        android:layout_marginTop="16dp"
+        android:adjustViewBounds="true"
+        android:background="@drawable/logout"
+        android:scaleType="fitCenter"
+        app:layout_constraintStart_toStartOf="@+id/companyinfo"
+        app:layout_constraintTop_toBottomOf="@+id/companyinfo" />
+
+
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>

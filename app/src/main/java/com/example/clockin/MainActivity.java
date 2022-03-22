@@ -1,5 +1,6 @@
 package com.example.clockin;
 
+import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
@@ -9,18 +10,16 @@ import android.Manifest;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
-import android.os.Build;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.View;
-import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
 import com.example.clockin.databinding.ActivityMainBinding;
 import com.example.clockin.volley.VolleyDataRequester;
-import com.example.clockin.volley.VolleyHelperApplication;
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.google.android.gms.auth.api.signin.GoogleSignInClient;
@@ -47,17 +46,23 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         binding = ActivityMainBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
-        GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
+        /**GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
                 .requestEmail()
-                .build();
-        mGoogleSignInClient = GoogleSignIn.getClient(this, gso);
+                .build();*/
+       //  mGoogleSignInClient = GoogleSignIn.getClient(this, gso);
         binding.email.setAutofillHints(View.AUTOFILL_HINT_EMAIL_ADDRESS);
         binding.password.setAutofillHints(View.AUTOFILL_HINT_PASSWORD);
 
-        binding.signInButton.setOnClickListener(view -> {
+        ActionBar actionBar = getSupportActionBar();
+        actionBar.setDisplayShowCustomEnabled(true);
+        LayoutInflater inflater = (LayoutInflater) this.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+        View v = inflater.inflate(R.layout.action_bar_buttonless, null);
+        actionBar.setCustomView(v);
+
+        /**binding.signInButton.setOnClickListener(view -> {
             Intent signInIntent = mGoogleSignInClient.getSignInIntent();
             startActivityForResult(signInIntent, RC_SIGN_IN);
-        });
+        });*/
 
         binding.login.setOnClickListener(view -> {
             try {
@@ -90,8 +95,8 @@ public class MainActivity extends AppCompatActivity {
                         try {
                             if (response.getBoolean("status")) {
                                 Intent intent = new Intent(getApplicationContext(), FaceClockIn.class);
-                                intent.putExtra("Purpose", "Identify");
-                                intent.putExtra("company_number", binding.email.getText().toString());
+                                intent.putExtra("PURPOSE", "IDENTIFY");
+                                intent.putExtra("ACCOUNT", binding.email.getText().toString());
                                 startActivity(intent);
                             } else {
                                 // user/pw invalid
@@ -107,6 +112,8 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+    /**
+
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
@@ -120,6 +127,7 @@ public class MainActivity extends AppCompatActivity {
             Log.v("Response", "Something errored");
         }
     }
+    */
 
     private void handleSignInResult(Task<GoogleSignInAccount> completedTask) {
         try {
@@ -140,8 +148,8 @@ public class MainActivity extends AppCompatActivity {
                             try {
                                 if (response.getBoolean("status")) {
                                     Intent intent = new Intent(getApplicationContext(), FaceClockIn.class);
-                                    intent.putExtra("Purpose", "Identify");
-                                    intent.putExtra("company_number", personId);
+                                    intent.putExtra("PURPOSE", "IDENTIFY");
+                                    intent.putExtra("ACCOUNT", personId);
                                     startActivity(intent);
                                 }
                             } catch (JSONException e) {

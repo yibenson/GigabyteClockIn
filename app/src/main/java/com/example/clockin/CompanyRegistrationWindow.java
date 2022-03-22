@@ -35,23 +35,24 @@ public class CompanyRegistrationWindow extends AppCompatActivity {
     }
 
     private void registerButtonClicked() {
-        if (isEmpty(binding.username)) {
-            binding.username.setError(getString(R.string.company_user_empty));
-        } else if (isEmpty(binding.password)) {
-            binding.password.setError(getString(R.string.password_empty));
-        } else if (!equals(binding.password, binding.confirmPassword)) {
-            binding.confirmPassword.setError(getString(R.string.password_no_match));
-        } else if (isEmpty(binding.companyName)) {
-            binding.companyName.setError(getString(R.string.company_name_empty));
-        } else if (isEmpty(binding.email)) {
-            binding.email.setError(getString(R.string.company_email_empty));
-
+        if (isEmpty(binding.companyName.getEditText())) {
+            binding.companyName.getEditText().setError(getString(R.string.company_name_empty));
+        } else if (isEmpty(binding.companyUsername.getEditText())) {
+            binding.companyUsername.getEditText().setError(getString(R.string.company_user_empty));
+        } else if (isEmpty(binding.password.getEditText())) {
+            binding.password.getEditText().setError(getString(R.string.password_empty));
+        } else if (!equals(binding.password.getEditText(), binding.confirmPassword.getEditText())) {
+            binding.confirmPassword.getEditText().setError(getString(R.string.password_no_match));
+        } else if (isEmpty(binding.email.getEditText())) {
+            binding.email.getEditText().setError(getString(R.string.company_email_empty));
+        } else if (!binding.termsService.isChecked()) {
+            binding.termsService.setError(getString(R.string.error_tos));
         }
         HashMap<String, String> body = new HashMap<>();
-        body.put("account", binding.username.getText().toString());
-        body.put("password", binding.password.getText().toString());
-        body.put("mail", binding.email.getText().toString());
-        body.put("workspace", binding.companyName.getText().toString());
+        body.put("account", binding.companyUsername.getEditText().getText().toString());
+        body.put("password", binding.password.getEditText().getText().toString());
+        body.put("mail", binding.email.getEditText().getText().toString());
+        body.put("workspace", binding.companyName.getEditText().getText().toString());
         body.put("third_party", "");
         VolleyDataRequester.withSelfCertifiedHttps(this)
                 .setUrl(host)
@@ -62,10 +63,10 @@ public class CompanyRegistrationWindow extends AppCompatActivity {
                     try {
                         switch (response.getString("error_msg")) {
                             case "ACCOUNT IS REGISTER":
-                                binding.username.setError(getString(R.string.duplicate_account));
+                                binding.companyUsername.setError(getString(R.string.duplicate_account));
                                 break;
                             case "ACCOUNT IS INVALID":
-                                binding.username.setError(getString(R.string.invalid_account));
+                                binding.companyUsername.setError(getString(R.string.invalid_account));
                                 break;
                             case "PASSWORD LENGTH IS INVALID":
                                 binding.password.setError(getString(R.string.password_empty));

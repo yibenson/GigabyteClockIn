@@ -16,8 +16,8 @@
 
         <androidx.cardview.widget.CardView
             android:id="@+id/clockIncameraWrapper"
-            android:layout_width="380dp"
-            android:layout_height="380dp"
+            android:layout_width="304dp"
+            android:layout_height="304dp"
             android:layout_centerInParent="true"
             android:foreground="@drawable/ring"
             android:padding="-10dp"
@@ -26,8 +26,8 @@
 
             <androidx.camera.view.PreviewView
                 android:id="@+id/previewView"
-                android:layout_width="380dp"
-                android:layout_height="380dp"
+                android:layout_width="304dp"
+                android:layout_height="304dp"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintHorizontal_bias="0.0"
@@ -36,17 +36,33 @@
         </androidx.cardview.widget.CardView>
 
 
+        <TextView
+            android:id="@+id/textView3"
+            android:layout_width="match_parent"
+            android:layout_height="43dp"
+            android:layout_above="@+id/clockIncameraWrapper"
+            android:layout_alignParentStart="true"
+            android:layout_alignParentTop="true"
+            android:layout_alignParentEnd="true"
+            android:layout_centerInParent="true"
+            android:layout_marginStart="0dp"
+            android:layout_marginTop="76dp"
+            android:layout_marginEnd="0dp"
+            android:layout_marginBottom="71dp"
+            android:text="@string/please_blink"
+            android:textAlignment="center"
+            android:textSize="24sp" />
+
         <Button
             android:id="@+id/shutter"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_width="300dp"
+            android:layout_height="32dp"
             android:layout_below="@+id/clockIncameraWrapper"
             android:layout_alignParentStart="true"
             android:layout_alignParentEnd="true"
-            android:layout_marginStart="155dp"
-            android:layout_marginTop="40dp"
-            android:layout_marginEnd="155dp"
-            android:gravity="center_horizontal"
+            android:layout_marginStart="50dp"
+            android:layout_marginTop="50dp"
+            android:layout_marginEnd="50dp"
             android:text="@string/identify" />
 
     </RelativeLayout>

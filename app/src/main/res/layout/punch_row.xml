@@ -6,7 +6,6 @@
     android:layout_width="match_parent"
     android:layout_height="60dp"
     android:orientation="horizontal"
-    android:background="@drawable/punch_background"
     android:layout_marginStart="10dp"
     android:layout_marginEnd="10dp"
     android:layout_marginTop="10dp"
@@ -16,87 +15,73 @@
         android:id="@+id/in"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginStart="24dp"
+        android:layout_marginTop="4dp"
         android:text="@string/in"
         android:textSize="15sp"
-        android:layout_marginTop="5dp"
-        android:layout_marginStart="15dp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.016"
-        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/in_date"
         app:layout_constraintTop_toTopOf="parent" />
 
     <TextView
         android:id="@+id/in_date"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
         android:text="01/01/2022"
         android:textSize="15sp"
-        android:layout_marginStart="25dp"
-        app:layout_constraintHorizontal_bias="0.016"
-        app:layout_constraintStart_toEndOf="@+id/in"
-        app:layout_constraintTop_toTopOf="@+id/in" />
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/imageView"
+        app:layout_constraintTop_toTopOf="parent" />
 
     <TextView
         android:id="@+id/in_time"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginStart="5dp"
         android:text="00:00"
         android:textSize="15sp"
-        android:layout_marginStart="25dp"
-        app:layout_constraintHorizontal_bias="0.016"
-        app:layout_constraintStart_toEndOf="@+id/in_date"
-        app:layout_constraintTop_toTopOf="@+id/in_date" />
+        app:layout_constraintStart_toEndOf="@+id/in"
+        app:layout_constraintTop_toTopOf="@+id/in" />
 
     <TextView
         android:id="@+id/out"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginBottom="8dp"
         android:text="@string/out"
         android:textSize="15sp"
-        android:layout_marginBottom="7dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="@+id/in" />
-
-    <TextView
-        android:id="@+id/out_date"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="01/01/2022"
-        android:textSize="15sp"
-        android:layout_marginStart="25dp"
-        app:layout_constraintHorizontal_bias="0.016"
-        app:layout_constraintStart_toEndOf="@+id/out"
-        app:layout_constraintTop_toTopOf="@+id/out" />
 
     <TextView
         android:id="@+id/out_time"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginStart="5dp"
         android:text="00:00"
         android:textSize="15sp"
-        android:layout_marginStart="25dp"
-        app:layout_constraintHorizontal_bias="0.016"
-        app:layout_constraintStart_toEndOf="@+id/out_date"
-        app:layout_constraintTop_toTopOf="@+id/out_date" />
-
-    <TextView
-        android:id="@+id/total"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="50dp"
-        android:textSize="15sp"
-        android:text="@string/time"
-        app:layout_constraintStart_toEndOf="@+id/out_time"
-        app:layout_constraintTop_toTopOf="@+id/out_time" />
+        app:layout_constraintStart_toEndOf="@+id/out"
+        app:layout_constraintTop_toTopOf="@+id/out" />
 
     <TextView
         android:id="@+id/total_time"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginEnd="32dp"
         android:text="00:00"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.644"
-        app:layout_constraintStart_toEndOf="@+id/total"
-        app:layout_constraintTop_toTopOf="@+id/total" />
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.487" />
+
+    <ImageView
+        android:id="@+id/imageView"
+        android:layout_width="54dp"
+        android:layout_height="47dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.538"
+        app:srcCompat="@drawable/clockin_icon" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

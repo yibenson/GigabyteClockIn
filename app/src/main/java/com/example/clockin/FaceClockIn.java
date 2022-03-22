@@ -2,6 +2,7 @@ package com.example.clockin;
 
 import android.Manifest;
 import android.annotation.SuppressLint;
+import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
@@ -14,11 +15,14 @@ import com.example.clockin.volley.VolleyDataRequester;
 import com.google.android.material.navigation.NavigationView;
 
 import androidx.annotation.NonNull;
+import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.ActionBarDrawerToggle;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.util.Log;
+import android.view.ContextThemeWrapper;
+import android.view.LayoutInflater;
 import android.view.View;
 
 import androidx.camera.core.CameraSelector;
@@ -61,14 +65,14 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
-public class FaceClockIn extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
+public class FaceClockIn extends AppCompatActivity {
     private static final String[] PERMISSIONS = {Manifest.permission.CAMERA, Manifest.permission.WRITE_EXTERNAL_STORAGE};
     private static final int REQUEST_CODE_CAMERA_PERMISSION = 200;
 
     private static String HOST = "https://52.139.218.209:443/";
-    private static final String IDENTIFY = "Identify";
-    private static final String REGISTER = "Register";
-    private static final String EDIT = "Edit";
+    private static final String IDENTIFY = "IDENTIFY";
+    private static final String REGISTER = "REGISTER";
+    private static final String EDIT = "EDIT";
 
     // camera variables
     private ListenableFuture<ProcessCameraProvider> cameraProviderFuture;
@@ -92,12 +96,12 @@ public class FaceClockIn extends AppCompatActivity implements NavigationView.OnN
         binding = FaceClockinBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
         // only display nav drawer when we're using this for identification
-        if (getIntent().getStringExtra("Purpose").equals("Identify")) {
-            actionBarDrawerToggle = new ActionBarDrawerToggle(this, binding.myDrawerLayout, R.string.nav_open, R.string.nav_close);
-            binding.myDrawerLayout.addDrawerListener(actionBarDrawerToggle);
-            actionBarDrawerToggle.syncState();
-            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-            binding.baseNavigationView.setNavigationItemSelectedListener(this);
+        if (getIntent().getStringExtra("PURPOSE").equals("IDENTIFY")) {
+            ActionBar actionBar = getSupportActionBar();
+            actionBar.setDisplayShowCustomEnabled(true);
+            LayoutInflater inflater = (LayoutInflater) this.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+            View v = inflater.inflate(R.layout.action_bar_buttonless, null);
+            actionBar.setCustomView(v);
         }
         if (!hasPermissions()) {
             // request camera permissions
@@ -146,6 +150,8 @@ public class FaceClockIn extends AppCompatActivity implements NavigationView.OnN
                                 }
                                 image.close();
                             }
+
+
                         }));
                 cameraProvider.bindToLifecycle(this, cameraSelector, imageAnalysis, imageCapture, preview);
             } catch (ExecutionException | InterruptedException e) {
@@ -194,19 +200,19 @@ public class FaceClockIn extends AppCompatActivity implements NavigationView.OnN
                 }
             }
         }).addOnCompleteListener(task -> {
-            switch (getIntent().getStringExtra("Purpose")) {
+            switch (getIntent().getStringExtra("PURPOSE")) {
                 case REGISTER:
                     // if registering a user for the first time
                     Intent intent = new Intent(getApplicationContext(), UserRegistrationWindow.class);
                     intent.putExtras(getIntent().getExtras());
-                    intent.putExtra("landmark", Arrays.toString(arr));
-                    intent.putExtra("photo", base64);
+                    intent.putExtra("LANDMARK", Arrays.toString(arr));
+                    intent.putExtra("PHOTO", base64);
                     showAlertDialog(null, intent, null);
                     break;
                 case IDENTIFY:
                     // if identifying a user to login
                     HashMap<String, String> body = new HashMap<>();
-                    body.put("account", getIntent().getStringExtra("company_number"));
+                    body.put("account", getIntent().getStringExtra("ACCOUNT"));
                     body.put("cropimage", base64);
                     body.put("landmark", Arrays.toString(arr));
                     VolleyDataRequester.withSelfCertifiedHttps(getApplicationContext())
@@ -214,7 +220,6 @@ public class FaceClockIn extends AppCompatActivity implements NavigationView.OnN
                             .setBody(body)
                             .setMethod(VolleyDataRequester.Method.POST)
                             .setJsonResponseListener(response -> {
-                                Log.v("Response", response.toString());
                                 try {
                                     Log.v("Response", response.toString());
                                     if (response.get("status").toString().equals("false")) {
@@ -222,11 +227,11 @@ public class FaceClockIn extends AppCompatActivity implements NavigationView.OnN
                                     } else {
                                         Intent id_intent = new Intent(getApplicationContext(), Homepage.class);
                                         JSONObject jsonObject = response.getJSONObject("result");
-                                        id_intent.putExtra("company_number", getIntent().getStringExtra("company_number"));
-                                        id_intent.putExtra("username", jsonObject.getString("username"));
-                                        id_intent.putExtra("manager", jsonObject.getBoolean("manager"));
-                                        id_intent.putExtra("user_object_id", jsonObject.getString("user_object_id"));
-                                        id_intent.putExtra("record_object_id", jsonObject.getString("record_object_id"));
+                                        id_intent.putExtra("ACCOUNT", getIntent().getStringExtra("ACCOUNT"));
+                                        id_intent.putExtra("USERNAME", jsonObject.getString("username"));
+                                        id_intent.putExtra("MANAGER", jsonObject.getBoolean("manager"));
+                                        id_intent.putExtra("USER_OBJECT_ID", jsonObject.getString("user_object_id"));
+                                        id_intent.putExtra("RECORD_OBJECT_ID", jsonObject.getString("record_object_id"));
                                         showAlertDialog(jsonObject.getString("username"), id_intent, null);
                                     }
                                 } catch (JSONException e) {
@@ -241,7 +246,7 @@ public class FaceClockIn extends AppCompatActivity implements NavigationView.OnN
                     try {
                         JSONObject jsonObject = new JSONObject(getIntent().getStringExtra("Info"));
                         String name = jsonObject.getString("name");
-                        mapBody.put("account", getIntent().getExtras().getString("company_number"));
+                        mapBody.put("account", getIntent().getExtras().getString("ACCOUNT"));
                         mapBody.put("name", jsonObject.getString("name"));
                         mapBody.put("phone", jsonObject.getString("phone"));
                         mapBody.put("mail", jsonObject.getString("mail"));
@@ -260,8 +265,23 @@ public class FaceClockIn extends AppCompatActivity implements NavigationView.OnN
         });
     }
 
-    private void showAlertDialog(String username, Intent intent, HashMap<String, String> body) {
+    private void showManagementDialog(Intent intent) {
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        final View customLayout = getLayoutInflater().inflate(R.layout.management_dialog, null);
+        customLayout.findViewById(R.id.first);
+        builder.setView(customLayout);
+        builder.setPositiveButton(getString(R.string.login), (dialog, which) -> {
+            startActivity(intent);
+        });
+        builder.setNegativeButton(getString(R.string.cancel), (dialog, which) -> {
+            dialog.dismiss();
+        });
+        AlertDialog dialog = builder.create();
+        dialog.show();
+    }
+
+    private void showAlertDialog(String username, Intent intent, HashMap<String, String> body) {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this, R.style.AlertDialogTheme);
         final View customLayout = getLayoutInflater().inflate(R.layout.confirm_dialog, null);
         builder.setView(customLayout);
         ImageView imageView = customLayout.findViewById(R.id.dialog_photo);
@@ -343,32 +363,6 @@ public class FaceClockIn extends AppCompatActivity implements NavigationView.OnN
 
 
 
-    @Override
-    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
-        if (actionBarDrawerToggle.onOptionsItemSelected(item)) {
-            return true;
-        }
-        return super.onOptionsItemSelected(item);
-    }
-
-
-    @Override
-    public boolean onNavigationItemSelected(@NonNull MenuItem item) {
-        switch (item.getItemId()) {
-            case R.id.add_account:
-                Intent intent = new Intent(this, UserRegistrationWindow.class);
-                intent.putExtra("company_number", getIntent().getStringExtra("company_number"));
-                startActivity(intent);
-                break;
-            case R.id.base_settings:
-                // todo: should contain language swap / maybe theme?
-            case R.id.base_logout:
-                startActivity(new Intent(this, MainActivity.class));
-                finish();
-        }
-        binding.myDrawerLayout.closeDrawer(GravityCompat.START);
-        return true;
-    }
 }
 
 

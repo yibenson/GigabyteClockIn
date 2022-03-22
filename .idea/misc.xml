@@ -5,36 +5,51 @@
       <map>
         <entry key="app/src/main/res/drawable-v24/ic_launcher_foreground.xml" value="0.25364583333333335" />
         <entry key="app/src/main/res/drawable-v24/ring.xml" value="0.2677083333333333" />
+        <entry key="app/src/main/res/drawable/divider.xml" value="0.30885416666666665" />
         <entry key="app/src/main/res/drawable/green_ring.xml" value="0.2677083333333333" />
         <entry key="app/src/main/res/drawable/ic_launcher_background.xml" value="0.25364583333333335" />
         <entry key="app/src/main/res/drawable/input_box.xml" value="0.2677083333333333" />
         <entry key="app/src/main/res/drawable/punch_border.xml" value="0.2484375" />
-        <entry key="app/src/main/res/layout/activity_main.xml" value="0.25" />
+        <entry key="app/src/main/res/drawable/square.xml" value="0.30885416666666665" />
+        <entry key="app/src/main/res/layout/action_bar.xml" value="0.28229166666666666" />
+        <entry key="app/src/main/res/layout/action_bar_buttonless.xml" value="0.33" />
+        <entry key="app/src/main/res/layout/activity_main.xml" value="0.33" />
         <entry key="app/src/main/res/layout/activity_registration_window.xml" value="0.335" />
         <entry key="app/src/main/res/layout/clockinorconfig.xml" value="0.165" />
-        <entry key="app/src/main/res/layout/company_registration_window.xml" value="0.5" />
+        <entry key="app/src/main/res/layout/company_registration_window.xml" value="0.335" />
         <entry key="app/src/main/res/layout/configmenu.xml" value="0.2515625" />
         <entry key="app/src/main/res/layout/confirm_dialog.xml" value="0.26666666666666666" />
         <entry key="app/src/main/res/layout/confirm_photo.xml" value="0.2515625" />
+        <entry key="app/src/main/res/layout/date_separator.xml" value="0.29270833333333335" />
         <entry key="app/src/main/res/layout/employees.xml" value="0.26666666666666666" />
-        <entry key="app/src/main/res/layout/face_clockin.xml" value="0.4036458333333333" />
+        <entry key="app/src/main/res/layout/face_clockin.xml" value="0.5" />
         <entry key="app/src/main/res/layout/faceclockin.xml" value="0.2515625" />
-        <entry key="app/src/main/res/layout/homepage.xml" value="0.375" />
+        <entry key="app/src/main/res/layout/homepage.xml" value="0.33" />
         <entry key="app/src/main/res/layout/info_edit.xml" value="0.4036458333333333" />
+        <entry key="app/src/main/res/layout/management_dialog.xml" value="0.5" />
+        <entry key="app/src/main/res/layout/management_menu.xml" value="0.5" />
+        <entry key="app/src/main/res/layout/management_punches.xml" value="0.4036458333333333" />
         <entry key="app/src/main/res/layout/punch_loading.xml" value="0.23229166666666667" />
+        <entry key="app/src/main/res/layout/punch_manage_row.xml" value="0.9" />
         <entry key="app/src/main/res/layout/punch_row.xml" value="0.5" />
-        <entry key="app/src/main/res/layout/punches.xml" value="0.33" />
+        <entry key="app/src/main/res/layout/punches.xml" value="0.5" />
+        <entry key="app/src/main/res/layout/section_child.xml" value="0.16354166666666667" />
+        <entry key="app/src/main/res/layout/section_header.xml" value="0.4036458333333333" />
         <entry key="app/src/main/res/layout/user_registration_window.xml" value="0.335" />
         <entry key="app/src/main/res/layout/user_row.xml" value="0.335" />
         <entry key="app/src/main/res/layout/userprofile.xml" value="0.335" />
+        <entry key="app/src/main/res/menu/base_navigation.xml" value="0.28229166666666666" />
         <entry key="app/src/main/res/menu/employee_navigation.xml" value="0.2515625" />
+        <entry key="app/src/main/res/menu/homepage.xml" value="0.5" />
+        <entry key="app/src/main/res/menu/homepage_bar.xml" value="0.29270833333333335" />
         <entry key="app/src/main/res/menu/manager_navigation.xml" value="0.2515625" />
         <entry key="app/src/main/res/menu/navigation_menu.xml" value="0.2515625" />
+        <entry key="app/src/main/res/mipmap-anydpi-v26/ic_launcher.xml" value="0.2984375" />
         <entry key="app/src/main/res/xml/network_security_config.xml" value="0.2515625" />
       </map>
     </option>
   </component>
-  <component name="ProjectRootManager" version="2" languageLevel="JDK_11" default="true" project-jdk-name="Android Studio default JDK" project-jdk-type="JavaSDK">
+  <component name="ProjectRootManager" version="2" languageLevel="JDK_11" default="true" project-jdk-name="11 (2)" project-jdk-type="JavaSDK">
     <output url="file://$PROJECT_DIR$/build/classes" />
   </component>
   <component name="ProjectType">

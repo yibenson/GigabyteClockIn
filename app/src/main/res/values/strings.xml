@@ -3,18 +3,18 @@
 
     // login
     <string name="title">GClockIn</string>
-    <string name="company_username">公司帳號</string>
-    <string name="company_password">公司密碼</string>
-    <string name="login">登錄</string>
+    <string name="company_username">帳號</string>
+    <string name="company_password">密碼</string>
+    <string name="login">登入</string>
     <string name="identify">辨識</string>
 
     // Company registration form
-    <string name="registration_form">報名表格</string>
-    <string name="set_company_username">欲設定公司帳號</string>
-    <string name="set_company_password">欲設定公司密碼</string>
-    <string name="confirm_password">確認密碼</string>
-    <string name="set_company_name">欲設定公司名稱</string>
-    <string name="set_company_email">欲設定公司電子郵件</string>
+    <string name="registration_form">免費註冊公司帳號</string>
+    <string name="set_company_username">帳號</string>
+    <string name="set_company_password">密碼</string>
+    <string name="confirm_password">在輸入一次密碼</string>
+    <string name="set_company_name">公司名稱</string>
+    <string name="set_company_email">E-mail</string>
     <string name="registration_success">註冊成功</string>
     <string name="register">註冊</string>
 
@@ -50,8 +50,9 @@
     <string name="cancel">取消</string>
 
     // punches
-    <string name="in">上班</string>
-    <string name="out">下班</string>
+    <string name="in">上班時間：</string>
+    <string name="out">下班時間：</string>
+    <string name="hours">%1$s小時</string>
     <string name="time">總時間</string>
     <string name="date_window">時間段: %1$s - %2$s</string>
 
@@ -80,11 +81,12 @@
     <string name="invalid_account">無效的公司名稱</string>
     <string name="company_login_failed">公司名稱或密碼錯誤</string>
     <string name="error_connecting">"連接時發生錯誤"</string>
+    <string name="error_tos">請同意服務條款</string>
 
     // dialog
     <string name="confirm_photo">確認照片</string>
     <string name="retry">重試</string>
-    <string name="please_blink">請閃爍以確保實時圖像</string>
+    <string name="please_blink">請對準臉框進行拍攝</string>
     <string name="no_faces_detected">未檢測到人臉</string>
     <string name="identification_unsuccessful">辨識失敗。再試一次</string>
     <string name="editing_success">編輯成功</string>
@@ -101,6 +103,15 @@
 
     // misc
     <string name="server_client_id">906711666561-evlhsmvgm4qcnu43gm09t417k2fuvu1f.apps.googleusercontent.com</string>
+    <string name="terms_of_service">點擊註冊代表同意 《服務條款》</string>
+    <string name="clockin_time">上班時間：</string>
+    <string name="clockout_time">下班時間：</string>
+
+    // screen names
+    <string name="punch_title">打卡紀錄</string>
+    <string name="profile_title">個人帳號管理</string>
+    <string name="all_punches_title">匯出報表</string>
+    <string name="add_user_title">新增使用者</string>
 
 
 </resources>
