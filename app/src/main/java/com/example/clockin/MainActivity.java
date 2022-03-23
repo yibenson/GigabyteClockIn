@@ -108,7 +108,6 @@ public class MainActivity extends AppCompatActivity {
                         }
                     })
                     .requestJson();
-
         }
     }
 
