@@ -295,6 +295,7 @@ public class FaceClockIn extends AppCompatActivity {
                 textView.setText(username);
             }
             builder.setPositiveButton(getString(R.string.confirm_photo), (dialog, which) -> {
+                dialog.dismiss();
                 startActivity(intent);
             });
             builder.setNegativeButton(getString(R.string.retry), (dialog, which) -> {

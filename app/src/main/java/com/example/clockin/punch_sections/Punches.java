@@ -24,6 +24,10 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.text.SimpleDateFormat;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -43,8 +47,11 @@ public class Punches extends AppCompatActivity implements PunchesAdapter.ItemCli
     private int AUTOMATIC_DATES = 0;
     private int MANUAL_DATES = 1;
 
+    // holds date formatters to swap between strings
+    private DateTimeFormatter BASE_FORMAT = DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm:ss");
+    private DateTimeFormatter DAY_FORMAT = DateTimeFormatter.ofPattern("yyyy/MM/dd");
+
     // holds the curr date endpoint of record window
-    private Calendar calendar;
     private SimpleDateFormat simpleDateFormat = new SimpleDateFormat("YYYY/MM/dd");
 
     @Override
@@ -55,31 +62,35 @@ public class Punches extends AppCompatActivity implements PunchesAdapter.ItemCli
         mSwipeRefreshLayout = binding.swipeLayout;
         Objects.requireNonNull(getSupportActionBar()).setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setTitle(getString(R.string.punch_title));
-        calendar = Calendar.getInstance();
         setDateWindow();
         binding.startDate.setOnClickListener(view -> openDateDialog(START_DATE));
         binding.endDate.setOnClickListener(view -> openDateDialog(END_DATE));
-        binding.button3.setOnClickListener(view -> populateDict(calendar, MANUAL_DATES));
+        binding.button3.setOnClickListener(view -> populateDict(null, MANUAL_DATES));
         punches = new JSONArray();
         Log.v("Punches", "Setting up recycler view");
         setUpRecyclerView();
         Log.v("Punches", "Attempting to populate dict");
-        populateDict(calendar, AUTOMATIC_DATES);
+        populateDict(LocalDateTime.now(), AUTOMATIC_DATES);
     }
 
-    private void populateDict(Calendar calendar, int mode) {
-        String company_number = getIntent().getStringExtra("ACCOUNT");
-        String username = getIntent().getStringExtra("USERNAME");
+    private void populateDict(LocalDateTime localDateTime, int mode) {
+        String ACCOUNT = getIntent().getStringExtra("ACCOUNT");
         HashMap<String, String> body = new HashMap<>();
-        body.put("account", company_number);
+        body.put("account", ACCOUNT);
         if (mode == AUTOMATIC_DATES) {
-            HashMap<String, String> dates = getTimes(calendar);
+            HashMap<String, String> dates = getTimes(localDateTime);
             body.put("starttime", dates.get("prev"));
             body.put("endtime", dates.get("curr"));
-        } else {
-            // do same thing for now
-            body.put("starttime", binding.startDate.getText().toString());
-            body.put("endtime", binding.endDate.getText().toString());
+        } else if (mode == MANUAL_DATES) {
+            LocalDate start = LocalDate.parse(binding.startDate.getText().toString(), DAY_FORMAT);
+            LocalDate end = LocalDate.parse(binding.endDate.getText().toString(), DAY_FORMAT);
+            if (start.isAfter(end)) {
+                Toast.makeText(getApplicationContext(), "Dates are out of order", Toast.LENGTH_LONG).show();
+                return;
+            } else {
+                body.put("starttime", start.format(DAY_FORMAT));
+                body.put("endtime", end.format(DAY_FORMAT));
+            }
         }
 
         VolleyDataRequester.withSelfCertifiedHttps(getApplicationContext())
@@ -113,10 +124,7 @@ public class Punches extends AppCompatActivity implements PunchesAdapter.ItemCli
                                     adapter.updateData(punches);
                                     adapter.notifyDataSetChanged();
                                 }
-
-
                             }
-
                         }
                     } catch (JSONException e) {
                         // means no more data, so do nothing
@@ -125,23 +133,10 @@ public class Punches extends AppCompatActivity implements PunchesAdapter.ItemCli
     }
 
     private void setDateWindow() {
-        HashMap<String, String> dates = getTimes(calendar);
-        String curr = simpleDateFormat.format(Calendar.getInstance().getTime());
-        binding.startDate.setText(dates.get("prev"));
+        String curr = LocalDateTime.now().format(DAY_FORMAT);
+        String prev = LocalDateTime.now().minusDays(30).format(DAY_FORMAT);
+        binding.startDate.setText(prev);
         binding.endDate.setText(curr);
-    }
-
-
-    // given calendar, returns dict of calendar's time and string of calendar's time 30 days prior
-    private HashMap<String, String> getTimes(Calendar cldr) {
-        String curr = simpleDateFormat.format(cldr.getTime());
-        cldr.add(Calendar.DAY_OF_YEAR, -30);
-        String prev = simpleDateFormat.format(cldr.getTime());
-        cldr.add(Calendar.DAY_OF_YEAR, 30);
-        return new HashMap<String, String>() {{
-            put("curr", curr);
-            put("prev", prev);
-        }};
     }
 
     private void setUpRecyclerView() {
@@ -154,9 +149,10 @@ public class Punches extends AppCompatActivity implements PunchesAdapter.ItemCli
         recyclerView.addItemDecoration(dividerItemDecoration);
         // populate dict automatically decrements calendar by 30 days
         mSwipeRefreshLayout.setOnRefreshListener(() -> {
-            calendar.add(Calendar.DAY_OF_YEAR, -30);
-            setDateWindow();
-            populateDict(calendar, AUTOMATIC_DATES);
+            LocalDateTime time = LocalDate.parse(binding.startDate.getText().toString(), DAY_FORMAT).atStartOfDay();
+            String prev = time.minusDays(30).format(DAY_FORMAT);
+            binding.startDate.setText(prev);
+            populateDict(null, MANUAL_DATES);
             mSwipeRefreshLayout.setRefreshing(false);
         });
     }
@@ -169,12 +165,12 @@ public class Punches extends AppCompatActivity implements PunchesAdapter.ItemCli
         // date picker dialog
         DatePickerDialog picker = new DatePickerDialog(Punches.this,
                 (datePicker, i, i1, i2) -> {
-                    String date = i + "/" + (i1+1) + "/" + i2;
-                    Log.v("Punches", date);
+                    LocalDate localDate = LocalDate.of(datePicker.getYear(), datePicker.getMonth(),
+                            datePicker.getDayOfMonth());
                     if (mode == START_DATE) {
-                        binding.startDate.setText(date);
+                        binding.startDate.setText(localDate.format(DAY_FORMAT));
                     } else {
-                        binding.endDate.setText(date);
+                        binding.endDate.setText(localDate.format(DAY_FORMAT));
                     }
                 }, year, month, day);
         picker.setButton(DialogInterface.BUTTON_NEUTRAL, "Name", (dialog, which) -> {
@@ -185,9 +181,20 @@ public class Punches extends AppCompatActivity implements PunchesAdapter.ItemCli
         picker.show();
     }
 
+
+    // given calendar, returns dict of calendar's time and string of calendar's time 30 days prior
+    private HashMap<String, String> getTimes(LocalDateTime time) {
+        String curr = time.format(DAY_FORMAT);
+        String prev = time.minusDays(30).format(DAY_FORMAT);
+        return new HashMap<String, String>() {{
+            put("curr", curr);
+            put("prev", prev);
+        }};
+    }
+
     @Override
     public void onItemClick(View view, int position) {
-        // TODO: Allow editing of punches
+        Toast.makeText(getApplicationContext(), "You clicked on position " + position, Toast.LENGTH_LONG).show();
     }
 
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {

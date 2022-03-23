@@ -28,13 +28,22 @@ public class ManagementMenu extends AppCompatActivity implements View.OnClickLis
             intent.putExtra("ACCOUNT", getIntent().getStringExtra("ACCOUNT"));
             startActivity(intent);
         });
+        binding.menubutton2.setOnClickListener(view -> {
+            Intent intent = new Intent(getApplicationContext(), UserRegistrationWindow.class);
+            intent.putExtra("ACCOUNT", getIntent().getStringExtra("ACCOUNT"));
+            startActivity(intent);
+        });
+        binding.menubutton6.setOnClickListener(view -> {
+            finish();
+        });
     }
 
     @Override
     public void onClick(View view) {
+        Intent intent;
         switch (view.getId()) {
             case (R.id.menubutton1):
-                Intent intent = new Intent(getApplicationContext(), ManagementPunches.class);
+                intent = new Intent(getApplicationContext(), ManagementPunches.class);
                 intent.putExtra("ACCOUNT", getIntent().getStringExtra("ACCOUNT"));
                 Log.v("Punches", "Starting management punches");
                 // startActivity(intent);
@@ -42,6 +51,8 @@ public class ManagementMenu extends AppCompatActivity implements View.OnClickLis
                 break;
             case (R.id.menubutton2):
                 // todo: add user
+                intent = new Intent(getApplicationContext(), UserRegistrationWindow.class);
+                intent.putExtra("ACCOUNT", getIntent().getStringExtra("ACCOUNT"));
                 break;
             case (R.id.menubutton3):
                 //  todo: user management (list of all users + ability to edit details)
@@ -52,6 +63,7 @@ public class ManagementMenu extends AppCompatActivity implements View.OnClickLis
                 // todo: config
             case (R.id.menubutton6):
                 // todo: logout
+                finish();
                 break;
         }
     }

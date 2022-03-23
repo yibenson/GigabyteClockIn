@@ -8,6 +8,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.util.Log;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -21,6 +22,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.HashMap;
+import java.util.Objects;
 
 public class CompanyRegistrationWindow extends AppCompatActivity {
     private String host = "https://52.139.218.209:443/account/company_register";
@@ -30,6 +32,7 @@ public class CompanyRegistrationWindow extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         binding = CompanyRegistrationWindowBinding.inflate(getLayoutInflater());
+        Objects.requireNonNull(getSupportActionBar()).setDisplayHomeAsUpEnabled(true);
         setContentView(binding.getRoot());
         binding.button.setOnClickListener(view -> registerButtonClicked());
     }
@@ -98,4 +101,15 @@ public class CompanyRegistrationWindow extends AppCompatActivity {
         CharSequence txt2 = editText2.getText().toString();
         return TextUtils.equals(txt1, txt2);
     }
+
+    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
+        switch (item.getItemId()) {
+            case android.R.id.home:
+                this.finish();
+                return true;
+        }
+        return super.onOptionsItemSelected(item);
+    }
+
+
 }

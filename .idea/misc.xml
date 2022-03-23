@@ -21,6 +21,8 @@
         <entry key="app/src/main/res/layout/confirm_dialog.xml" value="0.26666666666666666" />
         <entry key="app/src/main/res/layout/confirm_photo.xml" value="0.2515625" />
         <entry key="app/src/main/res/layout/date_separator.xml" value="0.29270833333333335" />
+        <entry key="app/src/main/res/layout/edit_edit_dialog.xml" value="0.67" />
+        <entry key="app/src/main/res/layout/edit_view_dialog.xml" value="0.67" />
         <entry key="app/src/main/res/layout/employees.xml" value="0.26666666666666666" />
         <entry key="app/src/main/res/layout/face_clockin.xml" value="0.5" />
         <entry key="app/src/main/res/layout/faceclockin.xml" value="0.2515625" />

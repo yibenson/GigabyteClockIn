@@ -55,6 +55,8 @@
     <string name="hours">%1$s小時</string>
     <string name="time">總時間</string>
     <string name="date_window">時間段: %1$s - %2$s</string>
+    <string name="in_string">上班時間：%1$s</string>
+    <string name="out_string">下班時間：%1$s</string>
 
     // user profile
     <string name="account_info">帳戶信息</string>
@@ -112,6 +114,5 @@
     <string name="profile_title">個人帳號管理</string>
     <string name="all_punches_title">匯出報表</string>
     <string name="add_user_title">新增使用者</string>
-
 
 </resources>

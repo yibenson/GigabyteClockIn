@@ -15,6 +15,7 @@ import java.time.format.DateTimeFormatter;
 
 public class Child {
     private String inDate;
+    private String outDate;
     private String inTime;
     private String outTime;
     private String totalTime;
@@ -29,6 +30,7 @@ public class Child {
             LocalDateTime clockout = LocalDateTime.parse(entry.getString(1), BASE_FORMAT);
             String total = entry.getString(2);
             inDate = clockin.format(DAY_FORMAT);
+            outDate = clockout.format(DAY_FORMAT);
             inTime = clockin.format(HOUR_FORMAT);
             outTime = clockout.format(HOUR_FORMAT);
             totalTime = total;
@@ -40,6 +42,10 @@ public class Child {
 
     public String getInDate() {
         return inDate;
+    }
+
+    public String getOutDate() {
+        return outDate;
     }
 
     public String getInTime() {

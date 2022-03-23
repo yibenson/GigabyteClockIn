@@ -88,6 +88,8 @@
     <string name="profile_title">User Profile</string>
     <string name="all_punches_title">Punch History</string>
     <string name="add_user_title">Add User</string>
+    <string name="in_string">In-time：%1$s</string>
+    <string name="out_string">Out-time：%1$s</string>
 
 
 </resources>

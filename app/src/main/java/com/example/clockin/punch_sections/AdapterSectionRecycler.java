@@ -22,12 +22,15 @@ public class AdapterSectionRecycler extends SectionRecyclerViewAdapter<SectionHe
     Context context;
     JSONObject faces;
     List<SectionHeader> sections;
+    private ChildViewHolder.OnEditClickListener onEditClickListener;
 
-    public AdapterSectionRecycler(Context context, List<SectionHeader> sectionHeaderItemList, JSONObject faces) {
+    public AdapterSectionRecycler(Context context, List<SectionHeader> sectionHeaderItemList, JSONObject faces,
+                                  ChildViewHolder.OnEditClickListener onEditClickListener) {
         super(context, sectionHeaderItemList);
         this.sections = sectionHeaderItemList;
         this.context = context;
         this.faces = faces;
+        this.onEditClickListener = onEditClickListener;
     }
 
     @Override
@@ -38,9 +41,8 @@ public class AdapterSectionRecycler extends SectionRecyclerViewAdapter<SectionHe
 
     @Override
     public ChildViewHolder onCreateChildViewHolder(ViewGroup childViewGroup, int viewType) {
-        Log.e("Punches", "Creating child view holder");
         View view = LayoutInflater.from(context).inflate(R.layout.punch_manage_row, childViewGroup, false);
-        return new ChildViewHolder(view);
+        return new ChildViewHolder(view, onEditClickListener);
     }
 
     @Override
