@@ -221,7 +221,6 @@ public class FaceClockIn extends AppCompatActivity {
                             .setMethod(VolleyDataRequester.Method.POST)
                             .setJsonResponseListener(response -> {
                                 try {
-                                    Log.v("Response", response.toString());
                                     if (response.get("status").toString().equals("false")) {
                                         runToast(getString(R.string.identification_unsuccessful));
                                     } else {
@@ -244,16 +243,16 @@ public class FaceClockIn extends AppCompatActivity {
                     // if ediitng the login photo for a user
                     HashMap<String, String> mapBody = new HashMap<>();
                     try {
-                        JSONObject jsonObject = new JSONObject(getIntent().getStringExtra("Info"));
+                        JSONObject jsonObject = new JSONObject(getIntent().getStringExtra("INFO"));
                         String name = jsonObject.getString("name");
                         mapBody.put("account", getIntent().getExtras().getString("ACCOUNT"));
-                        mapBody.put("name", jsonObject.getString("name"));
-                        mapBody.put("phone", jsonObject.getString("phone"));
-                        mapBody.put("mail", jsonObject.getString("mail"));
-                        mapBody.put("manager", jsonObject.getString("manager"));
-                        mapBody.put("wage", jsonObject.getString("wage"));
-                        mapBody.put("sex", jsonObject.getString("sex"));
-                        mapBody.put("birthday",  jsonObject.getString("birthday").replaceAll("\\.", "/"));
+                        mapBody.put("name", jsonObject.getString("NAME"));
+                        mapBody.put("phone", jsonObject.getString("PHONE"));
+                        mapBody.put("mail", jsonObject.getString("MAIL"));
+                        mapBody.put("manager", jsonObject.getString("MANAGER"));
+                        mapBody.put("wage", jsonObject.getString("WAGE"));
+                        mapBody.put("sex", jsonObject.getString("SEX"));
+                        mapBody.put("birthday",  jsonObject.getString("BIRTHDAY").replaceAll("\\.", "/"));
                         mapBody.put("enable", "true");
                         mapBody.put("face", base64);
                         mapBody.put("landmark", Arrays.toString(arr));

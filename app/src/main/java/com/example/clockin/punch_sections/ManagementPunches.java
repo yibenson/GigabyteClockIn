@@ -242,21 +242,23 @@ public class ManagementPunches extends AppCompatActivity implements ChildViewHol
     }
 
     private void openDateDialog(int mode) {
-        final LocalDate now = LocalDate.now();
+        LocalDate localDate = LocalDate.now();
+        if (mode == START_DATE) {
+            localDate = LocalDate.parse(binding.startDate.getText(), DAY_FORMAT);
+        } else if (mode == END_DATE) {
+            localDate = LocalDate.parse(binding.endDate.getText(), DAY_FORMAT);
+        }
         // date picker dialog
         DatePickerDialog picker = new DatePickerDialog(this,
                 (datePicker, i, i1, i2) -> {
-                    LocalDate localDate = LocalDate.of(datePicker.getYear(), datePicker.getMonth(),
+                    LocalDate selectedDate = LocalDate.of(datePicker.getYear(), datePicker.getMonth() + 1,
                             datePicker.getDayOfMonth());
                     if (mode == START_DATE) {
-                        binding.startDate.setText(localDate.format(DAY_FORMAT));
+                        binding.startDate.setText(selectedDate.format(DAY_FORMAT));
                     } else {
-                        binding.endDate.setText(localDate.format(DAY_FORMAT));
+                        binding.endDate.setText(selectedDate.format(DAY_FORMAT));
                     }
-                }, now.getYear(), now.getMonthValue(), now.getDayOfMonth());
-        picker.setButton(DialogInterface.BUTTON_NEUTRAL, "Name", (dialog, which) -> {
-            // do nothing
-        });
+                }, localDate.getYear(), localDate.getMonthValue(), localDate.getDayOfMonth());
         picker.getDatePicker().setSpinnersShown(true);
         picker.getDatePicker().setCalendarViewShown(false);
         picker.show();

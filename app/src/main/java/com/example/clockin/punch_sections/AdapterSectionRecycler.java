@@ -53,7 +53,7 @@ public class AdapterSectionRecycler extends SectionRecyclerViewAdapter<SectionHe
     @Override
     public void onBindChildViewHolder(ChildViewHolder childViewHolder, int sectionPosition, int childPosition, Child child) {
         try {
-            childViewHolder.fillValues(child);
+            childViewHolder.fillValues(child, context);
             byte[] decodedString = Base64.decode(faces.getString(child.getName()).replace("\\n", "\n"), Base64.DEFAULT);
             Bitmap decodedByte = BitmapFactory.decodeByteArray(decodedString, 0, decodedString.length);
             childViewHolder.photo.setImageBitmap(decodedByte);

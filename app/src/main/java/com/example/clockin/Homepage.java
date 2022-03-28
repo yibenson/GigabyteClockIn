@@ -25,6 +25,8 @@ import org.json.JSONObject;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
@@ -33,9 +35,11 @@ public class Homepage extends AppCompatActivity implements View.OnClickListener 
     private String RECORD_HOST = "https://52.139.218.209:443/record/get_user_record";
     private String CLOCK_HOST = "https://52.139.218.209:443/identify/clockin";
     private boolean clockedin = false;
-    private Date earliest_date;
-    private SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
     private HomepageBinding binding;
+
+    private DateTimeFormatter BASE_FORMAT = DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm:ss");
+    private DateTimeFormatter DAY_FORMAT = DateTimeFormatter.ofPattern("yyyy/MM/dd");
+    private DateTimeFormatter HOUR_FORMAT = DateTimeFormatter.ofPattern("HH:mm");
 
 
     protected void onCreate(Bundle savedInstanceState) {
@@ -99,33 +103,13 @@ public class Homepage extends AppCompatActivity implements View.OnClickListener 
 
 
 
-
-
-    // returns string representation of curr month and prev month
-    private String[] getMonths() {
-        Calendar calendar = Calendar.getInstance();
-        // add 1 to result of calendar.get because months are counted 0-11
-        String curr_month = Integer.toString(calendar.get(Calendar.MONTH) + 1);
-        String curr = calendar.get(Calendar.YEAR) + "/" + curr_month +
-                "/" + calendar.get(Calendar.DAY_OF_MONTH);
-        calendar.add(Calendar.DAY_OF_YEAR, -3);
-        String prev_month = Integer.toString(calendar.get(Calendar.MONTH) + 1);
-        String prev = calendar.get(Calendar.YEAR) + "/" + prev_month +
-                "/" + calendar.get(Calendar.DAY_OF_MONTH);
-        calendar.add(Calendar.DAY_OF_YEAR, 3);
-        return new String[]{curr, prev};
-    }
-
-
-
+    /* This function assumes if user is clocked in, that they clocked in within the past 30 days */
     private void startTimer() {
-        String[] months = getMonths();
-        String curr_month = months[0];
-        String prev_month = months[1];
         HashMap<String, String> body = new HashMap<String, String>(){{
             put("account", getIntent().getStringExtra("ACCOUNT"));
-            put("starttime", prev_month);
-            put("endtime", curr_month);
+            LocalDateTime curr = LocalDateTime.now();
+            put("starttime", curr.format(DAY_FORMAT));
+            put("endtime", curr.minusDays(30).format(DAY_FORMAT));
         }};
         VolleyDataRequester.withSelfCertifiedHttps(getApplicationContext())
                 .setUrl(RECORD_HOST)
@@ -136,46 +120,34 @@ public class Homepage extends AppCompatActivity implements View.OnClickListener 
                     final JSONObject[] jsonObject = new JSONObject[1];
                     try {
                         if (!response.getBoolean("status")) {
-                            // binding.chronometer.setText(getString(R.string.error_connecting));
-                            Log.v("Homepage", "Error connecting to server");
+                            Toast.makeText(getApplicationContext(), getString(R.string.error_connecting), Toast.LENGTH_LONG).show();
                         } else {
+                            Log.e("Homepage", response.toString());
                             // iterate through records to find most recent record with matching username
                             JSONArray jsonArray = response.getJSONArray("result");
-                            earliest_date = simpleDateFormat.parse("1900/01/01 00:00:00");
+                            LocalDateTime earliest = LocalDateTime.parse("1900/01/01 00:00:00", BASE_FORMAT);
                             String username = getIntent().getStringExtra("USERNAME");
                             for (int i = 0; i < jsonArray.length(); i++) {
                                 JSONObject temp = jsonArray.getJSONObject(i);
                                 if (temp.getString("user").equals(username)) {
-                                    Date date = simpleDateFormat.parse(temp.getString("date"));
-                                    if (earliest_date.compareTo(date) < 0) {
+                                    LocalDateTime curr = LocalDateTime.parse(temp.getString("date"), BASE_FORMAT);
+                                    if (earliest.isBefore(curr)) {
                                         jsonObject[0] = temp;
-                                        earliest_date = date;
+                                        earliest = curr;
                                     }
                                 }
                             }
-                            if (jsonObject[0].getString("status").equals("OFF")) {
-                                // do nothing
-                                // clockedin = false;
-                                // binding.chronometer.setText(R.string.clocked_out);
-
+                            if (jsonObject[0] == null) {
+                                Toast.makeText(getApplicationContext(), "No data", Toast.LENGTH_LONG).show();
+                            } else if (jsonObject[0].getString("status").equals("OFF")) {
+                                clockedin = false;
                             } else {
                                 clockedin = true;
-                                Date date = simpleDateFormat.parse(jsonObject[0].getString("date"));
-                                Calendar calendar = Calendar.getInstance();
-                                calendar.setTime(date);
-                                String time = calendar.get(Calendar.HOUR_OF_DAY) +
-                                        " : " + calendar.get(Calendar.MINUTE);
-                                binding.clockinTime.setText(time);
+                                binding.clockinTime.setText(jsonObject[0].getString("date"));
                                 binding.clockinButton.setBackground(getResources().getDrawable(R.drawable.active_button));
-
-
-                                // this will print how long user has been clocked in on chronometer
-                                // date is null if no punch records exist yet (new users)
-                                // binding.clockinTime
-                                // printDifference(date);
                             }
                         }
-                    } catch (JSONException | ParseException | NullPointerException e) {
+                    } catch (JSONException | NullPointerException e) {
                         binding.chronometer.setText(R.string.clocked_out);
                     }
                 }).requestJson();
@@ -184,23 +156,11 @@ public class Homepage extends AppCompatActivity implements View.OnClickListener 
 
     private void showAlertDialog(String status) {
         AlertDialog alertDialog = new AlertDialog.Builder(Homepage.this, R.style.AlertDialogTheme).create();
-        Calendar calendar = Calendar.getInstance();
-        String time = " : " + calendar.get(Calendar.HOUR_OF_DAY) +
-                ":" + calendar.get(Calendar.MINUTE) + ":" + calendar.get(Calendar.SECOND);
-        alertDialog.setMessage(time);
-
-        alertDialog.setMessage(getString(R.string.clockin_confirm) + time);
+        alertDialog.setMessage(getString(R.string.clockin_confirm) + LocalDateTime.now().format(BASE_FORMAT));
         alertDialog.setButton(AlertDialog.BUTTON_POSITIVE, getString(R.string.yes),
                 (dialog, which) -> {
                     clock(status);
                     dialog.dismiss();
-                    /**
-                    Intent intent = new Intent(this, FaceClockIn.class);
-                    intent.putExtra("ACCOUNT", getIntent().getStringExtra("ACCOUNT"));
-                    intent.putExtra("PURPOSE", "IDENTIFY");
-                    startActivity(intent);
-                    finish();
-                     */
                 }
         );
         alertDialog.setButton(AlertDialog.BUTTON_NEGATIVE, getString(R.string.cancel),
@@ -210,17 +170,10 @@ public class Homepage extends AppCompatActivity implements View.OnClickListener 
 
 
     private void clock(String status) {
-        // get curr time
-        Calendar calendar = Calendar.getInstance();
-        String curr_month = Integer.toString(calendar.get(Calendar.MONTH) + 1);
-        String time = calendar.get(Calendar.YEAR) + "/" + curr_month + "/" +
-                calendar.get(Calendar.DAY_OF_MONTH) + " " + calendar.get(Calendar.HOUR_OF_DAY) +
-                ":" + calendar.get(Calendar.MINUTE) + ":" + calendar.get(Calendar.SECOND);
-
         HashMap<String, String> body = new HashMap<>();
         body.put("account", getIntent().getStringExtra("ACCOUNT"));
         body.put("user_object_id", getIntent().getStringExtra("USER_OBJECT_ID"));
-        body.put("date", time);
+        body.put("date", LocalDateTime.now().format(BASE_FORMAT));
         body.put("record_object_id", getIntent().getStringExtra("RECORD_OBJECT_ID"));
         body.put("status", status);
         VolleyDataRequester.withSelfCertifiedHttps(getApplicationContext())
@@ -228,21 +181,14 @@ public class Homepage extends AppCompatActivity implements View.OnClickListener 
                 .setBody(body)
                 .setMethod(VolleyDataRequester.Method.POST )
                 .setJsonResponseListener(response -> {
-                    Log.v("Clocked", response.toString());
+                    Log.e("Clocked", response.toString());
                     try {
                         if (response.getBoolean("status")) {
                             if (status.equals("ON")) {
                                 Toast.makeText(this, getString(R.string.clockin_success), Toast.LENGTH_LONG).show();
                                 clockedin = true;
-                                /**
-                                binding.chronometer.setFormat(getString(R.string.clocked_in_for));
-                                binding.chronometer.setBase(SystemClock.elapsedRealtime());
-                                binding.chronometer.start();
-                                 */
                                 binding.clockinButton.setBackground(getResources().getDrawable(R.drawable.active_button));
-                                int hour24hours = calendar.get(Calendar.HOUR_OF_DAY);
-                                int minutes = calendar.get(Calendar.MINUTE);
-                                binding.clockinTime.setText(hour24hours +  ":" +  minutes);
+                                binding.clockinTime.setText(LocalDateTime.now().format(HOUR_FORMAT));
                             } else {
                                 Toast.makeText(this, getString(R.string.clockin_success), Toast.LENGTH_LONG).show();
                                 clockedin = false;
@@ -259,28 +205,9 @@ public class Homepage extends AppCompatActivity implements View.OnClickListener 
                 }).requestJson();
     }
 
-    private void printDifference(Date prev) {
-        Calendar calendar = Calendar.getInstance();
-        Date curr = calendar.getTime();
-        final long[] difference = {curr.getTime() - prev.getTime()};
-        binding.chronometer.setOnChronometerTickListener(chronometer -> {
-            difference[0] +=1000;
-            int h   = (int)(difference[0] / 3600000);
-            int m = (int)(difference[0] - h*3600000) / 60000;
-            int s= (int)(difference[0] - h*3600000- m*60000)/1000 ;
-            String t = (h < 10 ? "0"+h: h)+":"+(m < 10 ? "0"+m: m)+":"+ (s < 10 ? "0"+s: s);
-            binding.chronometer.setText(getString(R.string.clocked_in_for, t));
-        });
-        binding.chronometer.setBase(difference[0]);
-        binding.chronometer.setText(R.string.timer_format);
-        binding.chronometer.start();
-    }
-
-
-
     private void welcomeMessage() {
         String username = getIntent().getStringExtra("USERNAME");
-        int hour = Calendar.getInstance().get(Calendar.HOUR_OF_DAY);
+        int hour = LocalDateTime.now().getHour();
         if ((hour >= 23) || (hour < 6)) {
             binding.welcome.setText(getString(R.string.midnight, username));
         } else if (hour < 12) {

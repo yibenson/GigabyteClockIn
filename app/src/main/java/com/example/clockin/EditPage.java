@@ -6,9 +6,11 @@ import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.util.Base64;
 import android.util.Log;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.clockin.databinding.InfoEditBinding;
@@ -19,6 +21,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.HashMap;
+import java.util.Objects;
 
 public class EditPage extends AppCompatActivity {
     private int NAME = 0;
@@ -33,9 +36,11 @@ public class EditPage extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         binding = InfoEditBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
-        int purpose = getIntent().getIntExtra("Purpose", 0);
+        Objects.requireNonNull(getSupportActionBar()).setDisplayHomeAsUpEnabled(true);
+        int purpose = getIntent().getIntExtra("PURPOSE", 0);
+        Log.e("Edit", getIntent().getStringExtra("INFO"));
         try {
-            JSONObject info = new JSONObject(getIntent().getStringExtra("Info"));
+            JSONObject info = new JSONObject(getIntent().getStringExtra("INFO"));
             switch (purpose) {
                 case 0:
                     binding.textView.setText(info.getString("name"));
@@ -63,7 +68,7 @@ public class EditPage extends AppCompatActivity {
             public void onClick(View view) {
                 HashMap<String, String> mapBody = new HashMap<>();
                 try {
-                    JSONObject jsonObject = new JSONObject(getIntent().getStringExtra("Info"));
+                    JSONObject jsonObject = new JSONObject(getIntent().getStringExtra("INFO"));
                     mapBody.put("name", jsonObject.getString("name"));
                     mapBody.put("phone", jsonObject.getString("phone"));
                     mapBody.put("mail", jsonObject.getString("mail"));
@@ -117,7 +122,7 @@ public class EditPage extends AppCompatActivity {
 
     @SuppressLint("SetTextI18n")
     public void sendInfo(HashMap<String, String> body) {
-        body.put("account", getIntent().getExtras().getString("company_number"));
+        body.put("account", getIntent().getExtras().getString("ACCOUNT"));
         Log.v("EditPage", body.toString() );
         VolleyDataRequester.withSelfCertifiedHttps(getApplicationContext())
                 .setUrl(HOST)
@@ -125,15 +130,26 @@ public class EditPage extends AppCompatActivity {
                 .setMethod(VolleyDataRequester.Method.POST )
                 .setJsonResponseListener(response -> {
                     try {
+                        Log.e("Info", response.toString());
                         if (!response.getBoolean("status")) {
                             Toast.makeText(this, R.string.error_connecting, Toast.LENGTH_LONG).show();
                         } else {
+                            Toast.makeText(this, R.string.editing_success, Toast.LENGTH_LONG).show();
                             finish();
                         }
                     } catch (JSONException e) {
                         e.printStackTrace();
                     }
                 }).requestJson();
+    }
+
+    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
+        switch (item.getItemId()) {
+            case android.R.id.home:
+                this.finish();
+                return true;
+        }
+        return super.onOptionsItemSelected(item);
     }
 
 }

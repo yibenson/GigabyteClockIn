@@ -51,8 +51,6 @@ public class Punches extends AppCompatActivity implements PunchesAdapter.ItemCli
     private DateTimeFormatter BASE_FORMAT = DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm:ss");
     private DateTimeFormatter DAY_FORMAT = DateTimeFormatter.ofPattern("yyyy/MM/dd");
 
-    // holds the curr date endpoint of record window
-    private SimpleDateFormat simpleDateFormat = new SimpleDateFormat("YYYY/MM/dd");
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -75,6 +73,7 @@ public class Punches extends AppCompatActivity implements PunchesAdapter.ItemCli
 
     private void populateDict(LocalDateTime localDateTime, int mode) {
         String ACCOUNT = getIntent().getStringExtra("ACCOUNT");
+        String USERNAME = getIntent().getStringExtra("USERNAME");
         HashMap<String, String> body = new HashMap<>();
         body.put("account", ACCOUNT);
         if (mode == AUTOMATIC_DATES) {
@@ -103,27 +102,24 @@ public class Punches extends AppCompatActivity implements PunchesAdapter.ItemCli
                         if (!response.getBoolean("status")) {
                             Toast.makeText(this, "Connection failed. Try again", Toast.LENGTH_LONG).show();
                         } else {
-                            JSONObject jsonObject = response.getJSONObject("result");
-                            for (Iterator<String> it = jsonObject.keys(); it.hasNext(); ) {
-                                String s = it.next();
-                                jsonObject = jsonObject.getJSONObject(s);
-                                JSONArray temp = jsonObject.getJSONArray("detail");
-                                int added_size = temp.length();
-                                // want earliest punches to go to front of list, latest (most recent) at end
-                                for (int i = 0; i < punches.length(); i++) {
-                                    temp.put(punches.get(i));
-                                }
-                                punches = temp;
-                                if (punches.length()==0) {
-                                    Toast.makeText(getApplicationContext(), "No data detected", Toast.LENGTH_LONG).show();
-                                }
-                                if (mode == AUTOMATIC_DATES) {
-                                    adapter.updateData(punches);
-                                    adapter.notifyItemRangeInserted(0, added_size);
-                                } else {
-                                    adapter.updateData(punches);
-                                    adapter.notifyDataSetChanged();
-                                }
+                            // Response object from API looks like {..., "result": { "name1": {..., "detail": JSONArray(JSONArray(clockindate1, clockoutdate1, totaltime1), ...)}}}
+                            JSONArray detail = response.getJSONObject("result").getJSONObject(USERNAME).getJSONArray("detail");
+                            /*
+                            int added_size = detail.length(); // number of records we are inserting
+                            for (int i = 0; i < punches.length(); i++) {
+                                detail.put(punches.get(i));
+                            }
+                             */
+                            punches = detail;
+                            if (punches.length()==0) {
+                                Toast.makeText(getApplicationContext(), "No data detected", Toast.LENGTH_LONG).show();
+                            }
+                            if (mode == AUTOMATIC_DATES) {
+                                adapter.updateData(punches);
+                                adapter.notifyDataSetChanged();
+                            } else {
+                                adapter.updateData(punches);
+                                adapter.notifyDataSetChanged();
                             }
                         }
                     } catch (JSONException e) {
@@ -149,7 +145,7 @@ public class Punches extends AppCompatActivity implements PunchesAdapter.ItemCli
         recyclerView.addItemDecoration(dividerItemDecoration);
         // populate dict automatically decrements calendar by 30 days
         mSwipeRefreshLayout.setOnRefreshListener(() -> {
-            LocalDateTime time = LocalDate.parse(binding.startDate.getText().toString(), DAY_FORMAT).atStartOfDay();
+            LocalDate time = LocalDate.parse(binding.startDate.getText().toString(), DAY_FORMAT);
             String prev = time.minusDays(30).format(DAY_FORMAT);
             binding.startDate.setText(prev);
             populateDict(null, MANUAL_DATES);
@@ -158,24 +154,23 @@ public class Punches extends AppCompatActivity implements PunchesAdapter.ItemCli
     }
 
     private void openDateDialog(int mode) {
-        final Calendar cldr = Calendar.getInstance();
-        int day = cldr.get(Calendar.DAY_OF_MONTH);
-        int month = cldr.get(Calendar.MONTH);
-        int year = cldr.get(Calendar.YEAR);
+        LocalDate localDate = LocalDate.now();
+        if (mode == START_DATE) {
+            localDate = LocalDate.parse(binding.startDate.getText(), DAY_FORMAT);
+        } else if (mode == END_DATE) {
+            localDate = LocalDate.parse(binding.endDate.getText(), DAY_FORMAT);
+        }
         // date picker dialog
         DatePickerDialog picker = new DatePickerDialog(Punches.this,
                 (datePicker, i, i1, i2) -> {
-                    LocalDate localDate = LocalDate.of(datePicker.getYear(), datePicker.getMonth(),
+                    LocalDate selectedDate = LocalDate.of(datePicker.getYear(), datePicker.getMonth() + 1,
                             datePicker.getDayOfMonth());
                     if (mode == START_DATE) {
-                        binding.startDate.setText(localDate.format(DAY_FORMAT));
+                        binding.startDate.setText(selectedDate.format(DAY_FORMAT));
                     } else {
-                        binding.endDate.setText(localDate.format(DAY_FORMAT));
+                        binding.endDate.setText(selectedDate.format(DAY_FORMAT));
                     }
-                }, year, month, day);
-        picker.setButton(DialogInterface.BUTTON_NEUTRAL, "Name", (dialog, which) -> {
-            // do nothing
-        });
+                }, localDate.getYear(), localDate.getMonthValue(), localDate.getDayOfMonth());
         picker.getDatePicker().setSpinnersShown(true);
         picker.getDatePicker().setCalendarViewShown(false);
         picker.show();
@@ -194,7 +189,7 @@ public class Punches extends AppCompatActivity implements PunchesAdapter.ItemCli
 
     @Override
     public void onItemClick(View view, int position) {
-        Toast.makeText(getApplicationContext(), "You clicked on position " + position, Toast.LENGTH_LONG).show();
+        // Toast.makeText(getApplicationContext(), "You clicked on position " + position, Toast.LENGTH_LONG).show();
     }
 
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {

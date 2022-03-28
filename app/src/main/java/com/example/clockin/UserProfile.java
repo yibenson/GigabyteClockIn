@@ -23,6 +23,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Objects;
 
 public class UserProfile extends AppCompatActivity {
@@ -143,11 +144,26 @@ public class UserProfile extends AppCompatActivity {
                             byte[] decodedString = Base64.decode(jsonObject.getString("face").replace("\\n", "\n"), Base64.DEFAULT);
                             Bitmap decodedByte = BitmapFactory.decodeByteArray(decodedString, 0, decodedString.length);
                             binding.profilePhoto.setImageBitmap(decodedByte);
+
+                            /* capitalizing keys of jsonobject for consistency across app */
+                            capitalize_keys(info);
                         }
                     } catch (JSONException e) {
                         e.printStackTrace();
                     }
                 }).requestJson();
+    }
+
+    void capitalize_keys(JSONObject info) {
+        try {
+            for (Iterator<String> it = info.keys(); it.hasNext(); ) {
+                String k = it.next();
+                info.put(k.toUpperCase(), info.get(k));
+                info.remove(k);
+            }
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
     }
 
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {

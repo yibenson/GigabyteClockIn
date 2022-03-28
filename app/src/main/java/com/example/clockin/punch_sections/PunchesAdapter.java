@@ -23,6 +23,10 @@ public class PunchesAdapter extends RecyclerView.Adapter<PunchesAdapter.ViewHold
     private ItemClickListener mClickListener;
     private final Context context;
 
+    SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
+    SimpleDateFormat date = new SimpleDateFormat("yyyy/MM/dd");
+    SimpleDateFormat hour = new SimpleDateFormat("HH:mm");
+
     // data is passed into the constructor
     PunchesAdapter(Context context, JSONArray data) {
         this.mInflater = LayoutInflater.from(context);
@@ -46,9 +50,6 @@ public class PunchesAdapter extends RecyclerView.Adapter<PunchesAdapter.ViewHold
     public void onBindViewHolder(ViewHolder holder, int position) {
         try {
             JSONArray punch = (JSONArray) mData.get(position);
-            SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
-            SimpleDateFormat date = new SimpleDateFormat("yyyy/MM/dd");
-            SimpleDateFormat hour = new SimpleDateFormat("HH:mm");
             Date clockin = simpleDateFormat.parse(punch.getString(0));
             Date clockout = simpleDateFormat.parse(punch.getString(1));
             String total = punch.getString(2);

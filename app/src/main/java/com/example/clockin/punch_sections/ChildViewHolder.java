@@ -1,5 +1,6 @@
 package com.example.clockin.punch_sections;
 
+import android.content.Context;
 import android.util.Log;
 import android.view.View;
 import android.widget.ImageButton;
@@ -37,10 +38,10 @@ class ChildViewHolder extends RecyclerView.ViewHolder implements View.OnClickLis
         editButton.setOnClickListener(this);
     }
 
-    public void fillValues(Child child) throws JSONException {
-        inTime.setText(child.getInTime());
-        outTime.setText(child.getOutTime());
-        totalTime.setText(child.getTotalTime());
+    public void fillValues(Child child, Context context) throws JSONException {
+        inTime.setText(context.getString(R.string.in_string, child.getInTime()));
+        outTime.setText(context.getString(R.string.out_string, child.getOutTime()));
+        totalTime.setText(context.getString(R.string.hours, child.getTotalTime()));
         username.setText(child.getName());
     }
 

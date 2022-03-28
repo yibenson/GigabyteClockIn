@@ -8,6 +8,8 @@
 
     <style name="MyDatePicker" parent="android:Widget.Material.DatePicker">
         <item name="android:datePickerMode">spinner</item>
+        <item name="android:buttonBarPositiveButtonStyle">@style/PositiveButtonStyle</item>
+        <item name="android:buttonBarNegativeButtonStyle">@style/NegativeButtonStyle</item>
     </style>
 
     <style name="MyEditText" parent="@android:style/Widget.EditText">
@@ -57,6 +59,10 @@
 
     <style name="DialogBaseTheme" parent="android:Theme.Holo.Light.Dialog">
 
+    </style>
+
+    <style name="DialogButtonStyled" parent="Theme.MaterialComponents.Light">
+        <item name="android:textColor">@color/main</item>
     </style>
 
     <style name="Divider">

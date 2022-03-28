@@ -70,12 +70,12 @@ More documentation on CameraX can be found here:https://developer.android.com/tr
 ### Homepage
 If the user logs in correctly, they will see the Homepage. There are buttons on the top and bottom to clock in/out; if the user presses one of them, they are prompted with a confirm page and we will send the request to the server. There is also a button in the top right for managers to sign in with a secure pin; the reason the code looks kind of strange for this section is because I try to make the cursor bounce automatically to each square after you input 1 number of the pin. It will remain for a future coder on how to hide the numbers. 
 
-Currently, all times are handled via Calendar objects and string parsing. Calendar is an old library though and is hard to use/hard to debug; I've been using LocalDateTime and LocalDate to handle punches for management and that's been much easier. You might want to transfer Calendar over to these two objects to make your life easier.
+A MASSIVE problem (probably the biggest problem remaining) is that if the user clocks-in then exits the app, there is no way of checking with the backend what the current clock-in status of the user is. For example, if user A clocks in and exits the app, upon relogging in/opening the homepage, the request to record/get_user_record does not return the status of the user, that they are currently clocked in. Therefore, the user cannot punch out successfully because the app thinks they are not currently punched in. This is top priority to be fixed. 
 
 ## Users
 
 ### Punches
-The punch records page contains a list of the user records for the requested date range. Users can pull down to refresh the feed and also get the next set of records for the 30 days. There is a bug right now with records not showing up - I think it has something to do with the Calendar/LocalDateTime not being compatible, and will try to fix asap. 
+The punch records page contains a list of the user records for the requested date range. Users can pull down to refresh the feed and also get the next set of records for the 30 days. There was a bug with records not showing up - I think it has something to do with the Calendar/LocalDateTime not being compatible, but is now resolved.
 
 Essentially, we maintain a list of punch records and everytime we refresh the layout, we add to the top of the list and push it into the screen. Pretty simple. 
 
@@ -122,12 +122,26 @@ We also maintain a HashMap of dates; this lets us efficiently look up if we have
 }
 ```
 
+This section can be made much more efficient; currently I am repulling records for the entire date range when the user requests the next 30 days. Ideally we would only request records for that 30 day window and add it to our current list; this remains to be done and is likely needed to be accomplished for performance reasons.
+
 ### Edit Punches (part of Management Punches)
 This section will not make sense to you unless you understand RecyclerView / ViewHolder. But basically, we create a click interface inside the ChildViewHolder and implement it inside ManagementPunches. We can then pass the implementation to each ChildViewHolder when we bind it inside our RecyclerView adapter so that when we click on a button, we know which row/entry we are clicking on. 
 
 The rest is pretty simple - a page will pop up that shows the punch record and you can choose to edit it. 
 
 ### UserRegistrationWindow
+
+The code for this page is pretty self-explanatory. The most important part is that when we try to add a photo, we need to preserve the information we've already put in (name, birthday, stuff like that). So we package our current fields into a JSONObject and pass it to the FaceClockIn class, where we add a photo. Then when we return to the UserRegistrationWindow, we fill the input fields with our previous answers.
+
+There might be a bug involving parsing birthdays that I haven't looked into deeply yet, but if user registration fails, it's likely because of this reason. 
+
+## Known issues
+1) Read the last paragraph on efficiency in the Management Punches sections. This issue doesn't break the app, but we probably need to do it for performance reasons.
+2) DateDialogs are a major issue. The "Confirm" buttons are not appearing correctly, and when I try to set the color of the button text, the app crashes. Also, I try to initialize the date dialog calendar to open to the current start/end date, but it always opens to a month after the date I want. Inputting the date works fine however, so this is just a small inconvenience issue.
+3) When viewing ManagementPunches where there are only two dates, they appear in opposite order (the most recent date section is on top, while the earliest is on bottom). Pulling down and requesting the next date range makes the dates appear in correct order, so this must be a strange edge case. I think the problem is inside the comparator function between dates (the sortDates() function inside of ManagementPunches), but not sure.
+4) In general, when creating a company, there is no way to add a manager after company creation. We probably need to add some kind of email link to add a first manager, though you guys can decide what you want to do. If you want to create a company and add that 1st user right now for testing, you can probably add a button to the FaceClockIn layout that, when it's clicked,  opens the UserRegistrationWindow. Don't forget to include the "ACCOUNT" attribute inside the Intent opening to UserRegistrationWindow.
+
+
 
 
 

@@ -23,6 +23,9 @@ import androidx.constraintlayout.widget.ConstraintLayout;
 import com.example.clockin.databinding.UserRegistrationWindowBinding;
 import com.example.clockin.volley.VolleyDataRequester;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.HashMap;
@@ -31,6 +34,8 @@ import java.util.Objects;
 public class UserRegistrationWindow extends AppCompatActivity implements AdapterView.OnItemSelectedListener {
     String HOST = "https://52.139.218.209:443/user/user_reigster"; // typo courtesy of backend guy
     private UserRegistrationWindowBinding binding;
+
+    private DateTimeFormatter DAY_FORMAT = DateTimeFormatter.ofPattern("yyyy/MM/dd");
 
     private String photo;
     private String landmarks;
@@ -42,7 +47,7 @@ public class UserRegistrationWindow extends AppCompatActivity implements Adapter
         binding = UserRegistrationWindowBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
         Objects.requireNonNull(getSupportActionBar()).setDisplayHomeAsUpEnabled(true);
-        if (getIntent().hasExtra("photo")) {
+        if (getIntent().hasExtra("PHOTO")) {
             binding.addPhoto.setText("Photo added!");
         }
 
@@ -60,19 +65,19 @@ public class UserRegistrationWindow extends AppCompatActivity implements Adapter
 
         // fill data if returning to window
         Intent data = getIntent();
-        if (data.hasExtra("photo")) {
-            binding.username.getEditText().setText(data.getExtras().getString("username"));
-            binding.phone.getEditText().setText(data.getExtras().getString("phone"));
-            binding.email.getEditText().setText(data.getExtras().getString("mail"));
-            binding.wage.getEditText().setText(data.getExtras().getString("wage"));
-            binding.manager.setChecked((boolean) data.getExtras().get("manager"));
-            binding.birthday.getEditText().setText(data.getExtras().getString("birthday"));
+        if (data.hasExtra("PHOTO")) {
+            binding.username.getEditText().setText(data.getExtras().getString("USERNAME"));
+            binding.phone.getEditText().setText(data.getExtras().getString("PHONE"));
+            binding.email.getEditText().setText(data.getExtras().getString("MAIL"));
+            binding.wage.getEditText().setText(data.getExtras().getString("WAGE"));
+            binding.manager.setChecked((boolean) data.getExtras().get("MANAGER"));
+            binding.birthday.getEditText().setText(data.getExtras().getString("BIRTHDAY"));
 
             // assign priv variables
-            sex = data.getExtras().getInt("sex");
+            sex = data.getExtras().getInt("SEX");
             binding.sex.setSelection(sex);
-            photo = data.getStringExtra("photo");
-            landmarks = data.getStringExtra("landmark");
+            photo = data.getStringExtra("PHOTO");
+            landmarks = data.getStringExtra("LANDMARK");
         }
     }
 
@@ -110,7 +115,7 @@ public class UserRegistrationWindow extends AppCompatActivity implements Adapter
                 .requestJson();
         // Success --> return to idle clock in
         Intent intent = new Intent(this, FaceClockIn.class);
-        intent.putExtra("Purpose", "Identify");
+        intent.putExtra("PURPOSE", "IDENTIFY");
         intent.putExtra("ACCOUNT", getIntent().getStringExtra("ACCOUNT"));
         startActivity(intent);
         finish();
@@ -136,29 +141,25 @@ public class UserRegistrationWindow extends AppCompatActivity implements Adapter
     public void openFaceClockIn() {
         if (emptyForm()) { return; }
         Intent intent = new Intent(this, FaceClockIn.class);
-        intent.putExtra("Purpose", "Register");
-        intent.putExtra("company_number", getIntent().getStringExtra("ACCOUNT"));
-        intent.putExtra("username", binding.username.getEditText().getText().toString());
-        intent.putExtra("phone", binding.phone.getEditText().getText().toString());
-        intent.putExtra("mail", binding.email.getEditText().getText().toString());
-        intent.putExtra("wage", binding.wage.getEditText().getText().toString());
-        intent.putExtra("manager", binding.manager.isChecked());
-        intent.putExtra("birthday", binding.birthday.getEditText().getText().toString());
-        intent.putExtra("sex", sex);
+        intent.putExtra("PURPOSE", "REGISTER");
+        intent.putExtra("ACCOUNT", getIntent().getStringExtra("ACCOUNT"));
+        intent.putExtra("USERNAME", binding.username.getEditText().getText().toString());
+        intent.putExtra("PHONE", binding.phone.getEditText().getText().toString());
+        intent.putExtra("MAIL", binding.email.getEditText().getText().toString());
+        intent.putExtra("WAGE", binding.wage.getEditText().getText().toString());
+        intent.putExtra("MANAGER", binding.manager.isChecked());
+        intent.putExtra("BIRTHDAY", binding.birthday.getEditText().getText().toString());
+        intent.putExtra("SEX", sex);
         startActivity(intent);
     }
 
     private void openDateDialog() {
-        final Calendar cldr = Calendar.getInstance();
-        int day = cldr.get(Calendar.DAY_OF_MONTH);
-        int month = cldr.get(Calendar.MONTH);
-        int year = cldr.get(Calendar.YEAR);
         // date picker dialog
         DatePickerDialog picker = new DatePickerDialog(UserRegistrationWindow.this,
                 (datePicker, i, i1, i2) -> {
-                    String date = i + "." + i1 + "." + i2;
-                    binding.birthday.getEditText().setText(date);
-                }, year, month, day);
+                    LocalDate localDate = LocalDate.of(datePicker.getYear(), datePicker.getMonth(), datePicker.getDayOfMonth());
+                    binding.birthday.getEditText().setText(localDate.format(DAY_FORMAT));
+                }, LocalDateTime.now().getYear(), LocalDateTime.now().getMonthValue(), LocalDateTime.now().getDayOfMonth());
         picker.getDatePicker().setSpinnersShown(true);
         picker.getDatePicker().setCalendarViewShown(false);
         picker.show();
