@@ -138,10 +138,11 @@ The code for this page is pretty self-explanatory. The most important part is th
 There might be a bug involving parsing birthdays that I haven't looked into deeply yet, but if user registration fails, it's likely because of this reason. 
 
 ## Known issues
-1) Read the last paragraph on efficiency in the Management Punches sections. This issue doesn't break the app, but we probably need to do it for performance reasons.
+1) Read the last paragraph in the Homepage section. This is a fix that will probably need to be coordianted with the backend and is top priority to be fixed. 
 2) DateDialogs are a major issue. The "Confirm" buttons are not appearing correctly, and when I try to set the color of the button text, the app crashes. Also, I try to initialize the date dialog calendar to open to the current start/end date, but it always opens to a month after the date I want. Inputting the date works fine however, so this is just a small inconvenience issue.
 3) When viewing ManagementPunches where there are only two dates, they appear in opposite order (the most recent date section is on top, while the earliest is on bottom). Pulling down and requesting the next date range makes the dates appear in correct order, so this must be a strange edge case. I think the problem is inside the comparator function between dates (the sortDates() function inside of ManagementPunches), but not sure.
-4) In general, when creating a company, there is no way to add a manager after company creation. We probably need to add some kind of email link to add a first manager, though you guys can decide what you want to do. If you want to create a company and add that 1st user right now for testing, you can probably add a button to the FaceClockIn layout that, when it's clicked,  opens the UserRegistrationWindow. Don't forget to include the "ACCOUNT" attribute inside the Intent opening to UserRegistrationWindow.
+4) Read the last paragraph in ManagementPunches on efficiency. Doesn't break the app not to do this, but we probably need to fix this for performance reasons. 
+5) In general, when creating a company, there is no way to add a manager after company creation. We probably need to add some kind of email link to add a first manager, though you guys can decide what you want to do. If you want to create a company and add that 1st user right now for testing, you can probably add a button to the FaceClockIn layout that, when it's clicked,  opens the UserRegistrationWindow. Don't forget to include the "ACCOUNT" attribute inside the Intent opening to UserRegistrationWindow.
 
 
 
