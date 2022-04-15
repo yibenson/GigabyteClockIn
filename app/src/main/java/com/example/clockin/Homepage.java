@@ -156,7 +156,7 @@ public class Homepage extends AppCompatActivity implements View.OnClickListener 
 
     private void showAlertDialog(String status) {
         AlertDialog alertDialog = new AlertDialog.Builder(Homepage.this, R.style.AlertDialogTheme).create();
-        alertDialog.setMessage(getString(R.string.clockin_confirm) + LocalDateTime.now().format(BASE_FORMAT));
+        alertDialog.setMessage(getString(R.string.clockin_confirm) + " " + LocalDateTime.now().format(BASE_FORMAT));
         alertDialog.setButton(AlertDialog.BUTTON_POSITIVE, getString(R.string.yes),
                 (dialog, which) -> {
                     clock(status);

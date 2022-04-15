@@ -19,7 +19,7 @@ The URL field must hold the IP address of the request we are making.
 
 Don't forget to add .requestJSON() at the end
 
-```aidl
+```
   void loginButtonClicked() throws MalformedURLException {
         ...
             HashMap<String, String> body = new HashMap<>();
@@ -102,7 +102,7 @@ Each punch record in that JSONArray is also a JSONArray. From the individual pun
 
 We also maintain a HashMap of dates; this lets us efficiently look up if we have already put a date into our list of SectionHeaders. Furthermore, the dates HashMap will also store the index of the SectionHeaders; this is important because the RecyclerView will display each section according to its "index" attribute. So later, we can sort our list of dates and set the index attributes of the corresponding SectionHeaders so the sections appear in order.
 
-```aidl
+```
  for (Iterator<String> it = result.keys(); it.hasNext();) {
     String name = it.next();
     JSONObject jsonObject = result.getJSONObject(name);
@@ -135,13 +135,10 @@ The rest is pretty simple - a page will pop up that shows the punch record and y
 
 The code for this page is pretty self-explanatory. The most important part is that when we try to add a photo, we need to preserve the information we've already put in (name, birthday, stuff like that). So we package our current fields into a JSONObject and pass it to the FaceClockIn class, where we add a photo. Then when we return to the UserRegistrationWindow, we fill the input fields with our previous answers.
 
-There might be a bug involving parsing birthdays that I haven't looked into deeply yet, but if user registration fails, it's likely because of this reason. 
-
 ## Known issues
 1) Read the last paragraph on efficiency in the Management Punches sections. This issue doesn't break the app, but we probably need to do it for performance reasons.
 2) DateDialogs are a major issue. The "Confirm" buttons are not appearing correctly, and when I try to set the color of the button text, the app crashes. Also, I try to initialize the date dialog calendar to open to the current start/end date, but it always opens to a month after the date I want. Inputting the date works fine however, so this is just a small inconvenience issue.
-3) When viewing ManagementPunches where there are only two dates, they appear in opposite order (the most recent date section is on top, while the earliest is on bottom). Pulling down and requesting the next date range makes the dates appear in correct order, so this must be a strange edge case. I think the problem is inside the comparator function between dates (the sortDates() function inside of ManagementPunches), but not sure.
-4) In general, when creating a company, there is no way to add a manager after company creation. We probably need to add some kind of email link to add a first manager, though you guys can decide what you want to do. If you want to create a company and add that 1st user right now for testing, you can probably add a button to the FaceClockIn layout that, when it's clicked,  opens the UserRegistrationWindow. Don't forget to include the "ACCOUNT" attribute inside the Intent opening to UserRegistrationWindow.
+3) In general, when creating a company, there is no way to add a manager after company creation. We probably need to add some kind of email link to add a first manager, though you guys can decide what you want to do. If you want to create a company and add that 1st user right now for testing, you can probably add a button to the FaceClockIn layout that, when it's clicked,  opens the UserRegistrationWindow. Don't forget to include the "ACCOUNT" attribute inside the Intent opening to UserRegistrationWindow.
 
 
 

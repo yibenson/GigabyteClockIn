@@ -146,7 +146,7 @@ public class UserProfile extends AppCompatActivity {
                             binding.profilePhoto.setImageBitmap(decodedByte);
 
                             /* capitalizing keys of jsonobject for consistency across app */
-                            capitalize_keys(info);
+                            info = capitalize_keys(info);
                         }
                     } catch (JSONException e) {
                         e.printStackTrace();
@@ -154,16 +154,17 @@ public class UserProfile extends AppCompatActivity {
                 }).requestJson();
     }
 
-    void capitalize_keys(JSONObject info) {
+    JSONObject capitalize_keys(JSONObject info) {
+        JSONObject jsonObject = new JSONObject();
         try {
             for (Iterator<String> it = info.keys(); it.hasNext(); ) {
-                String k = it.next();
-                info.put(k.toUpperCase(), info.get(k));
-                info.remove(k);
+                String s = it.next();
+                jsonObject.put(s.toUpperCase(), info.get(s));
             }
         } catch (JSONException e) {
             e.printStackTrace();
         }
+        return jsonObject;
     }
 
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {

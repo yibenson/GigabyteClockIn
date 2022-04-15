@@ -38,26 +38,25 @@ public class EditPage extends AppCompatActivity {
         setContentView(binding.getRoot());
         Objects.requireNonNull(getSupportActionBar()).setDisplayHomeAsUpEnabled(true);
         int purpose = getIntent().getIntExtra("PURPOSE", 0);
-        Log.e("Edit", getIntent().getStringExtra("INFO"));
         try {
             JSONObject info = new JSONObject(getIntent().getStringExtra("INFO"));
             switch (purpose) {
                 case 0:
-                    binding.textView.setText(info.getString("name"));
+                    binding.textView.setText(info.getString("NAME"));
                     break;
                 case 1:
-                    binding.textView.setText(info.getString("phone"));
+                    binding.textView.setText(info.getString("PHONE"));
                     break;
                 case 2:
-                    binding.textView.setText(info.getString("mail"));
+                    binding.textView.setText(info.getString("MAIL"));
                     break;
                 case 3:
-                    binding.textView.setText(info.getString("wage"));
+                    binding.textView.setText(info.getString("WAGE"));
                     break;
                 case 4:
-                    binding.textView.setText(getString(R.string.manager, info.getString("manager")));
+                    binding.textView.setText(getString(R.string.manager, info.getString("MANAGER")));
                 case 5:
-                    binding.textView.setText(getString(R.string.active, info.getString("enable")));
+                    binding.textView.setText(getString(R.string.active, info.getString("ENABLE")));
             }
         } catch (JSONException e) {
             e.printStackTrace();
@@ -69,12 +68,12 @@ public class EditPage extends AppCompatActivity {
                 HashMap<String, String> mapBody = new HashMap<>();
                 try {
                     JSONObject jsonObject = new JSONObject(getIntent().getStringExtra("INFO"));
-                    mapBody.put("name", jsonObject.getString("name"));
-                    mapBody.put("phone", jsonObject.getString("phone"));
-                    mapBody.put("mail", jsonObject.getString("mail"));
-                    mapBody.put("manager", jsonObject.getString("manager"));
-                    mapBody.put("sex", jsonObject.getString("sex"));
-                    mapBody.put("birthday",  jsonObject.getString("birthday").replaceAll("\\.", "/"));
+                    mapBody.put("name", jsonObject.getString("NAME"));
+                    mapBody.put("phone", jsonObject.getString("PHONE"));
+                    mapBody.put("mail", jsonObject.getString("MAIL"));
+                    mapBody.put("manager", jsonObject.getString("MANAGER"));
+                    mapBody.put("sex", jsonObject.getString("SEX"));
+                    mapBody.put("birthday",  jsonObject.getString("BIRTHDAY").replaceAll("\\.", "/"));
                     mapBody.put("enable", "");
                     switch (purpose) {
                         case 0:
@@ -123,14 +122,12 @@ public class EditPage extends AppCompatActivity {
     @SuppressLint("SetTextI18n")
     public void sendInfo(HashMap<String, String> body) {
         body.put("account", getIntent().getExtras().getString("ACCOUNT"));
-        Log.v("EditPage", body.toString() );
         VolleyDataRequester.withSelfCertifiedHttps(getApplicationContext())
                 .setUrl(HOST)
                 .setBody(body)
                 .setMethod(VolleyDataRequester.Method.POST )
                 .setJsonResponseListener(response -> {
                     try {
-                        Log.e("Info", response.toString());
                         if (!response.getBoolean("status")) {
                             Toast.makeText(this, R.string.error_connecting, Toast.LENGTH_LONG).show();
                         } else {

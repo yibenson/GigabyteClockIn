@@ -96,13 +96,11 @@ public class FaceClockIn extends AppCompatActivity {
         binding = FaceClockinBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
         // only display nav drawer when we're using this for identification
-        if (getIntent().getStringExtra("PURPOSE").equals("IDENTIFY")) {
-            ActionBar actionBar = getSupportActionBar();
-            actionBar.setDisplayShowCustomEnabled(true);
-            LayoutInflater inflater = (LayoutInflater) this.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-            View v = inflater.inflate(R.layout.action_bar_buttonless, null);
-            actionBar.setCustomView(v);
-        }
+        ActionBar actionBar = getSupportActionBar();
+        actionBar.setDisplayShowCustomEnabled(true);
+        LayoutInflater inflater = (LayoutInflater) this.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+        View v = inflater.inflate(R.layout.action_bar_buttonless, null);
+        actionBar.setCustomView(v);
         if (!hasPermissions()) {
             // request camera permissions
             ActivityCompat.requestPermissions(this, PERMISSIONS, REQUEST_CODE_CAMERA_PERMISSION);
@@ -143,6 +141,7 @@ public class FaceClockIn extends AppCompatActivity {
                         imageCapture.takePicture(captureExecutor, new ImageCapture.OnImageCapturedCallback() {
                             @Override
                             public void onCaptureSuccess(@NonNull ImageProxy image) {
+                                Log.e("Image", "Clicked on shutter");
                                 if (livenessAnalyzer.getLiveness()) {
                                     cropFace(image);
                                 } else {
@@ -179,6 +178,7 @@ public class FaceClockIn extends AppCompatActivity {
     }
 
     private void send(Bitmap bitmap, String base64) {
+        Log.e("Image", "Trying to send face");
         // we pass bitmap through face detection again so landmark coordinates correspond to cropped img
         InputImage inputImage = InputImage.fromBitmap(bitmap, 0);
         FaceDetectorOptions options = new FaceDetectorOptions.Builder()
@@ -200,6 +200,9 @@ public class FaceClockIn extends AppCompatActivity {
                 }
             }
         }).addOnCompleteListener(task -> {
+            Log.e("Image", "Got to switch statement");
+            Log.e("Image", "Intent is : " + getIntent().getStringExtra("PURPOSE"));
+
             switch (getIntent().getStringExtra("PURPOSE")) {
                 case REGISTER:
                     // if registering a user for the first time
@@ -240,11 +243,12 @@ public class FaceClockIn extends AppCompatActivity {
                             .requestJson();
                     break;
                 case EDIT:
-                    // if ediitng the login photo for a user
+                    Log.e("Image", "Trying to edit");
+                    // if editing the login photo for a user
                     HashMap<String, String> mapBody = new HashMap<>();
                     try {
                         JSONObject jsonObject = new JSONObject(getIntent().getStringExtra("INFO"));
-                        String name = jsonObject.getString("name");
+                        String name = jsonObject.getString("NAME");
                         mapBody.put("account", getIntent().getExtras().getString("ACCOUNT"));
                         mapBody.put("name", jsonObject.getString("NAME"));
                         mapBody.put("phone", jsonObject.getString("PHONE"));

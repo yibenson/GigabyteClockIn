@@ -10,6 +10,7 @@
         <item name="android:datePickerMode">spinner</item>
         <item name="android:buttonBarPositiveButtonStyle">@style/PositiveButtonStyle</item>
         <item name="android:buttonBarNegativeButtonStyle">@style/NegativeButtonStyle</item>
+        <item name="colorAccent">@color/main</item>
     </style>
 
     <style name="MyEditText" parent="@android:style/Widget.EditText">

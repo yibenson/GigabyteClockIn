@@ -69,6 +69,7 @@ public class ManagementPunches extends AppCompatActivity implements ChildViewHol
     // holds date formatters to swap between strings
     private DateTimeFormatter BASE_FORMAT = DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm:ss");
     private DateTimeFormatter DAY_FORMAT = DateTimeFormatter.ofPattern("yyyy/MM/dd");
+    private DateTimeFormatter HOUR_FORMAT = DateTimeFormatter.ofPattern("HH:mm:ss");
 
     /* Current possible bugs:
     1. Since getFaces() and populateDict() are requested asynchronously, the server request in populateDict might connect/get data back before
@@ -133,12 +134,7 @@ public class ManagementPunches extends AppCompatActivity implements ChildViewHol
                             // Each JSONArray is itself an array of JSONArrays, each inner array representing a different punch record: {timein, timeout, total time, name}
                             // Response object from API looks like {..., "result": { "name1": {..., "detail": JSONArray(JSONArray(clockindate1, clockoutdate1, totaltime1), ...)}}}
                             JSONObject result = response.getJSONObject("result");
-                            int index;
-                            if (sectionHeaderList.size() == 0) {
-                                index = 0;
-                            } else {
-                                index = sectionHeaderList.size();
-                            }
+                            int index = 0;
                             for (Iterator<String> it = result.keys(); it.hasNext();) {
                                 String name = it.next();
                                 JSONObject jsonObject = result.getJSONObject(name);
@@ -149,7 +145,7 @@ public class ManagementPunches extends AppCompatActivity implements ChildViewHol
                                     String date_string = date.format(DAY_FORMAT); // gets date/year of string
                                     if (!dates.has(date_string)) {
                                         dates.put(date_string, index);
-                                        sectionHeaderList.add(new SectionHeader(new ArrayList<>(), date_string, 0));
+                                        sectionHeaderList.add(new SectionHeader(new ArrayList<>(), date_string, index));
                                         index++;
                                     }
                                     punch_times.put(name); // adds name of entry to the json array (VERY IMPORTANT)
@@ -286,17 +282,27 @@ public class ManagementPunches extends AppCompatActivity implements ChildViewHol
             hashMap.put(dateStrings.get(i), i);
         }
 
+        Log.e("Date", dateStrings.toString());
+
         for (int i = 0; i < list.size(); i++) {
             SectionHeader sectionHeader = list.get(i);
             sectionHeader.index = hashMap.get(sectionHeader.getSectionText());
         }
+
+        Collections.sort(list, new Comparator<SectionHeader>() {
+            @Override
+            public int compare(SectionHeader sectionHeader, SectionHeader t1) {
+                return sectionHeader.index < t1.index? -1 : 0;
+            }
+        });
+
         return list;
     }
 
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
         switch (item.getItemId()) {
             case android.R.id.home:
-                this.finish();
+                finish();
                 return true;
         }
         return super.onOptionsItemSelected(item);
@@ -408,25 +414,28 @@ public class ManagementPunches extends AppCompatActivity implements ChildViewHol
         start_time.setOnClickListener(v -> {
             int mHour = start.getHour();
             int mMinute = start.getMinute();
-            TimePickerDialog timePickerDialog = new TimePickerDialog(ManagementPunches.this,
-                    (TimePickerDialog.OnTimeSetListener) (view, hourOfDay, minute) ->
-                            start_time.setText(hourOfDay + ":" + minute + ":00"), mHour, mMinute, false);
-           //  timePickerDialog.getButton(TimePickerDialog.BUTTON_POSITIVE).setTextColor(getResources().getColor(R.color.main));
-           // timePickerDialog.getButton(TimePickerDialog.BUTTON_NEGATIVE).setTextColor(getResources().getColor(R.color.main));
+            TimePickerDialog timePickerDialog = new TimePickerDialog(this,
+                    (view, hourOfDay, minute) -> {
+                        LocalTime localTime = LocalTime.of(hourOfDay, minute);
+                        start_time.setText(localTime.format(HOUR_FORMAT));
+                    }, mHour, mMinute, false);
+            // timePickerDialog.getButton(TimePickerDialog.BUTTON_POSITIVE).setTextColor(getResources().getColor(R.color.main));
+            // timePickerDialog.getButton(TimePickerDialog.BUTTON_NEGATIVE).setTextColor(getResources().getColor(R.color.main));
             timePickerDialog.show();
         });
 
         end_time.setOnClickListener(v -> {
             int mHour = end.getHour();
             int mMinute = end.getMinute();
-            TimePickerDialog timePickerDialog = new TimePickerDialog(ManagementPunches.this,
-                    (TimePickerDialog.OnTimeSetListener) (view, hourOfDay, minute) ->
-                            end_time.setText(hourOfDay + ":" + minute + ":00"), mHour, mMinute, false);
-           // timePickerDialog.getButton(TimePickerDialog.BUTTON_POSITIVE).setTextColor(getResources().getColor(R.color.main));
-           // timePickerDialog.getButton(TimePickerDialog.BUTTON_NEGATIVE).setTextColor(getResources().getColor(R.color.main));
+            TimePickerDialog timePickerDialog = new TimePickerDialog(this,
+                    (view, hourOfDay, minute) -> {
+                        LocalTime localTime = LocalTime.of(hourOfDay, minute);
+                        end_time.setText(localTime.format(HOUR_FORMAT));
+                    }, mHour, mMinute, false);
+            // timePickerDialog.getButton(TimePickerDialog.BUTTON_POSITIVE).setTextColor(getResources().getColor(R.color.main));
+            // timePickerDialog.getButton(TimePickerDialog.BUTTON_NEGATIVE).setTextColor(getResources().getColor(R.color.main));
             timePickerDialog.show();
         });
-
 
         builder.setPositiveButton(getString(R.string.yes), (dialog, which) -> {
             String start_string_final = start_date.getText().toString() + " " + start_time.getText().toString();
@@ -485,7 +494,7 @@ public class ManagementPunches extends AppCompatActivity implements ChildViewHol
                         } else {
                             runToast(getString(R.string.editing_success));
                             // you can comment this out - implementation of what happens after edit can be discussed
-                            // populateDict(null, AUTOMATIC_DATES);
+                            populateDict(null, MANUAL_DATES);
                         }
                     } catch (JSONException e) {
                         e.printStackTrace();
