@@ -95,7 +95,7 @@ This was the most complicated portion of the application. Because we need a list
 The important information is contained in "Child" object. Child contains a particular punch entry: the in/out time and date, the name of the puncher, the total time they worked. A SectionHeader is basically our Date section - it has a date and a list of Child objects (the punch entries for that date). When we start the ManagementPunches page, we first request the faces of all the employees in the company from the server and store them in a JSONObject (the getFaces() function). We then try to get a list of SectionHeaders in populateDict - this list will contain SectionHeaders for each date in the requested time range, and each SectionHeader will contain a list of Child punch entries for that date. 
 
 There's some difficulty in parsing the response from the server. To get punch records from the server, you make a request to cal_working_hours, which gives you a response object that looks like:
-```aidl
+```
 {..., "result": {"Name of employee 1: {..., "detail": JSONArray of punch records
 ```
 Each punch record in that JSONArray is also a JSONArray. From the individual punch record JSONArray, we need to get the date and put it into our SectionHeader list if it's not there yet. Then we put the individual punch record into the correct SectionHeader in that list. 
