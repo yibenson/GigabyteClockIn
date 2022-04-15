@@ -3,7 +3,7 @@
 ## Description
 Clockin is a general purpose time-tracking app that allows users to punch-in and out securely via facial recognition. Users can keep track of their own user profiles and punch records; managers have the ability to add new users, edit their information, and view and edit company-wide punch records.
 
-Demo: https://drive.google.com/file/d/1UVupcJa-Zw9dS2Vcw7_NkH1vDeZbt-lL/view?usp=sharing
+Demo: https://drive.google.com/file/d/1VkS2dug7Bsp-NbfJLCRVItqfcXbYvPhv/view?usp=sharing
 
 ## Preliminaries
 
